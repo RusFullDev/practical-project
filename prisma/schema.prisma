@@ -88,8 +88,8 @@ name String
 phone String 
 role Role_Type @default(user)
 hashed_password String
-hashed_token String
-is_active Boolean
+hashed_token String 
+is_active Boolean @default(false)
 createAt           DateTime @default(now())
 updateAt           DateTime @updatedAt
 OrderTaxi         OrderTaxi[]
@@ -107,7 +107,6 @@ model OrderTaxi{
   date DateTime
   location String
   description String
-
 }
 
 model OrderTruck{
