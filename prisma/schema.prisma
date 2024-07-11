@@ -160,10 +160,10 @@ model Car {
 
 model Driver_car {
   id        Int @id @default(autoincrement())
-  car_id    Int @map("car_id")
-  driver_id Int @map("driver_id")
-  car    Car    @relation(fields: [car_id], references: [id])
-  driver Driver @relation(fields: [driver_id], references: [id])
+  carId    Int @map("carId")
+  driverId Int @map("driverId")
+  car    Car    @relation(fields: [carId], references: [id])
+  driver Driver @relation(fields: [driverId], references: [id])
 }
 
 model Region {
