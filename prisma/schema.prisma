@@ -80,10 +80,64 @@ model Definition {
 }
 
 model User {
+
+id   Int @id @default(autoincrement())
+name String 
+phone String 
+role Role_Type @default(user)
+hashed_password String
+hashed_token String 
+is_active Boolean @default(false)
+createAt           DateTime @default(now())
+updateAt           DateTime @updatedAt
+OrderTaxi         OrderTaxi[]
+OredrTruck        OrderTruck[]
+
+    @@map("user")
+}
+
+model OrderTaxi{
+  id   Int @id @default(autoincrement())
+  User            User?   @relation(fields: [userId], references: [id])
+  userId           Int?
+  to_district String
+  from_district String
+  date DateTime
+  location String
+  description String
+}
+
+model OrderTruck{
+  id   Int @id @default(autoincrement())
+   User            User?   @relation(fields: [userId], references: [id])
+  userId           Int?
+  cargo_type   Cargo_type @default(load)
+  date         DateTime
+  capacity     Int
+  recipient_name String
+  recipient_phone String
+  to_district String
+  from_district String
+  location String
+  description String
+}
+
+model Driver{
+  id   Int @id @default(autoincrement())
+  first_name String
+  last_name String
+  phone String
+  Address String
+  photo String
+  driver_license String
+  is_active Boolean
+  hashed_token String
+
   id              Int          @id @default(autoincrement())
   name            String
   phone           String
   role            Role_Type    @default(user)
+
   hashed_password String
   hashed_token    String
   is_active       Boolean
