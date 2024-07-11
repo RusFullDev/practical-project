@@ -11,6 +11,7 @@ import {
   IsDate,
   IsOptional,
   IsEnum,
+  IsDateString,
 } from 'class-validator';
 
 export class UpdateBalanceDto {
@@ -29,7 +30,7 @@ export class UpdateBalanceDto {
     example: '2024-07-10T08:00:00.000Z',
     description: 'The date of the balance transfer',
   })
-  @IsDate()
+  @IsDateString()
   @IsOptional()
   date?: Date;
 
