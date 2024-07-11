@@ -16,7 +16,6 @@ import { UpdateBalanceDto } from './dto/update-balance.dto';
 @Controller('balance')
 export class BalanceController {
   constructor(private readonly balanceService: BalanceService) {}
-
   @Post()
   @ApiResponse({
     status: 201,
@@ -24,6 +23,9 @@ export class BalanceController {
   })
   @ApiBody({ type: CreateBalanceDto }) // Specify input DTO for Swagger
   async create(@Body() createBalanceDto: CreateBalanceDto) {
+    // Convert the date string to a Date instance if necessary
+    createBalanceDto.date = new Date(createBalanceDto.date);
+
     return this.balanceService.create(createBalanceDto);
   }
 
