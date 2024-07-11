@@ -20,7 +20,7 @@ export class CreateDriverDto {
   last_name: string;
 
   @ApiProperty({
-    example: '+123456789',
+    example: '+998933757262',
     description: 'The phone number of the driver',
   })
   @IsString()

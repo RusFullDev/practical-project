@@ -26,7 +26,7 @@ export class UpdateDriverDto {
   last_name?: string;
 
   @ApiPropertyOptional({
-    example: '+123456789',
+    example: '+998933757262',
     description: 'The phone number of the driver',
   })
   @IsOptional()
