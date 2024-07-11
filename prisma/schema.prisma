@@ -27,13 +27,11 @@ enum Role_Type {
 enum Cargo_type {
   post @map("post")
   load @map("load")
-  
 }
 
 enum Transfer_type {
-  input @map("input")
+  input  @map("input")
   output @map("output")
-  
 }
 
 enum TranslateType {
@@ -81,15 +79,14 @@ model Definition {
   @@map("definition")
 }
 
-
 model User {
 id   Int @id @default(autoincrement())
 name String 
 phone String 
 role Role_Type @default(user)
 hashed_password String
-hashed_token String
-is_active Boolean
+hashed_token String 
+is_active Boolean @default(false)
 createAt           DateTime @default(now())
 updateAt           DateTime @updatedAt
 OrderTaxi         OrderTaxi[]
@@ -98,92 +95,86 @@ OredrTruck        OrderTruck[]
     @@map("user")
 }
 
-model OrderTaxi{
-  id   Int @id @default(autoincrement())
-  User            User?   @relation(fields: [userId], references: [id])
-  userId           Int?
-  to_district String
+model OrderTaxi {
+  id            Int      @id @default(autoincrement())
+  User          User?    @relation(fields: [userId], references: [id])
+  userId        Int?
+  to_district   String
   from_district String
-  date DateTime
-  location String
-  description String
-
+  date          DateTime
+  location      String
+  description   String
 }
 
-model OrderTruck{
-  id   Int @id @default(autoincrement())
-   User            User?   @relation(fields: [userId], references: [id])
-  userId           Int?
-  cargo_type   Cargo_type @default(load)
-  date         DateTime
-  capacity     Int
-  recipient_name String
+model OrderTruck {
+  id              Int        @id @default(autoincrement())
+  User            User?      @relation(fields: [userId], references: [id])
+  userId          Int?
+  cargo_type      Cargo_type @default(load)
+  date            DateTime
+  capacity        Int
+  recipient_name  String
   recipient_phone String
-  to_district String
-  from_district String
-  location String
-  description String
+  to_district     String
+  from_district   String
+  location        String
+  description     String
 }
 
-model Driver{
-  id   Int @id @default(autoincrement())
-  first_name String
-  last_name String
-  phone String
-  Address String
-  photo String
-  driver_license String
-  is_active Boolean
-  hashed_token String
-  hashed_password String
-  total_balance Decimal
- balance Balance[]
-  driver Driver_car[]
-
+model Driver {
+  id              Int          @id @default(autoincrement())
+  first_name      String
+  last_name       String
+  phone           String
+  address         String
+  photo           String
+  driver_license  String
+  is_active       Boolean? // Optional
+  hashed_token    String? // Optional
+  hashed_password String? // Optional
+  total_balance   Decimal
+  balance         Balance[]
+  driver_car      Driver_car[]
 }
 
-
-model Balance{
-  id   Int @id @default(autoincrement())
-  amount Decimal
-     Driver            Driver?   @relation(fields: [driverId], references: [id])
-     driverId  Int
-     date DateTime
-     trunsfer_type  Transfer_type @default(input)
+model Balance {
+  id            Int           @id @default(autoincrement())
+  amount        Decimal
+  Driver        Driver?       @relation(fields: [driverId], references: [id])
+  driverId      Int
+  date          DateTime
+  trunsfer_type Transfer_type @default(input)
 }
 
-model Car{
-  id   Int @id @default(autoincrement())
-  model String
-  color String
-  number String
-  photo String
+model Car {
+  id            Int    @id @default(autoincrement())
+  model         String
+  color         String
+  number        String
+  photo         String
   text_passport String
-  capacity String
+  capacity      String
 
   driver_car Driver_car[]
 }
 
 model Driver_car {
-  id   Int @id @default(autoincrement())
-  car_id Int @map("car_id")
+  id        Int @id @default(autoincrement())
+  car_id    Int @map("car_id")
   driver_id Int @map("driver_id")
-  
-  car            Car   @relation(fields: [car_id], references: [id])
-  driver            Driver   @relation(fields: [driver_id], references: [id])
+  car    Car    @relation(fields: [car_id], references: [id])
+  driver Driver @relation(fields: [driver_id], references: [id])
 }
 
-model Region{
-  id   Int @id @default(autoincrement())
-  name String
+model Region {
+  id       Int        @id @default(autoincrement())
+  name     String
   district District[]
-
 }
 
 model District {
-  id   Int @id @default(autoincrement())
-  name String
-  region_id Int @map("region_id")
-  region            Region   @relation(fields: [region_id], references: [id])
+  id        Int    @id @default(autoincrement())
+  name      String
+  region_id Int    @map("region_id")
+  region    Region @relation(fields: [region_id], references: [id])
 }
-
