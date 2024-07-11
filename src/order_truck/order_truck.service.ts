@@ -20,18 +20,10 @@ export class OrderTruckService {
       }
       const createdOrderTruck = await this.prismaService.orderTruck.create({
         data: {
-          userId: createOrderTruckDto.userId,
-          cargo_type: createOrderTruckDto.cargo_type,
-          date: createOrderTruckDto.date,
-          capacity: createOrderTruckDto.capacity,
-          recipient_name: createOrderTruckDto.recipient_name,
-          recipient_phone: createOrderTruckDto.recipient_phone,
-          to_district: createOrderTruckDto.to_district,
-          from_district: createOrderTruckDto.from_district,
-          location: createOrderTruckDto.location,
-          description: createOrderTruckDto.description,
+          ...createOrderTruckDto
         },
       });
+      
       return createdOrderTruck;
     } catch (error) {
       console.log(error);

@@ -15,40 +15,40 @@ export class CreateOrderTruckDto {
   @IsNumber()
   userId?: number;
 
-  @ApiProperty({ enum: Cargo_type })
+  @ApiProperty({ enum: Cargo_type, example: 'load' })
   @IsEnum(Cargo_type)
   cargo_type: Cargo_type;
 
-  @ApiProperty()
+  @ApiProperty({ example: '2001-01-01' })
   @IsDate()
   @Type(() => Date)
   date: Date;
 
-  @ApiProperty()
+  @ApiProperty({ example: 10 })
   @IsNumber()
   capacity: number;
 
-  @ApiProperty()
+  @ApiProperty({ example: 'Gofur' })
   @IsString()
   recipient_name: string;
 
-  @ApiProperty()
+  @ApiProperty({ example: '934554676' })
   @IsString()
   recipient_phone: string;
 
-  @ApiProperty()
+  @ApiProperty({ example: 'djizzakh' })
   @IsString()
   to_district: string;
 
-  @ApiProperty()
+  @ApiProperty({ example: 'tashkent' })
   @IsString()
   from_district: string;
 
-  @ApiProperty()
+  @ApiProperty({ example: 'yunusobod megaplaneta yonida' })
   @IsString()
   location: string;
 
-  @ApiProperty()
+  @ApiProperty({ example: 'komentaria' })
   @IsString()
   description: string;
 }

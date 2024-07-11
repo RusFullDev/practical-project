@@ -4,6 +4,7 @@ import { PrismaModule } from './prisma/prisma.module';
 import { UsersModule } from './users/users.module';
 import { OrderTaxiModule } from './order_taxi/order_taxi.module';
 import { OrderTruckModule } from './order_truck/order_truck.module';
+import { CarModule } from './car/car.module';
 
 
 @Module({
@@ -12,6 +13,7 @@ import { OrderTruckModule } from './order_truck/order_truck.module';
     UsersModule,
     OrderTaxiModule,
     OrderTruckModule,
+    CarModule,
   ],
   controllers: [],
   providers:[],
