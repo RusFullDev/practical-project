@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "Balance" ALTER COLUMN "date" SET DATA TYPE TEXT;
