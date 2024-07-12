@@ -9,21 +9,26 @@ import { CarModule } from './car/car.module';
 
 import { DriverModule } from './driver/driver.module';
 import { BalanceModule } from './balance/balance.module';
+import { DistrictModule } from './district/district.module';
+import { RegionModule } from './region/region.module';
+import { TranslateModule } from './translate/translate.module';
+import { LanguageModule } from './language/language.module';
 
 
 
 @Module({
   imports: [ConfigModule.forRoot({isGlobal:true,envFilePath:'.env'}),
     PrismaModule,
-
     UsersModule,
     OrderTaxiModule,
     OrderTruckModule,
     CarModule,
-
     DriverModule,
     BalanceModule,
-
+    DistrictModule,
+    RegionModule,
+    TranslateModule,
+    LanguageModule
   ],
   controllers: [],
   providers:[],
