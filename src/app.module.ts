@@ -13,6 +13,7 @@ import { DistrictModule } from './district/district.module';
 import { RegionModule } from './region/region.module';
 import { TranslateModule } from './translate/translate.module';
 import { LanguageModule } from './language/language.module';
+import { AuthModule } from './auth/auth.module';
 
 
 
@@ -28,7 +29,8 @@ import { LanguageModule } from './language/language.module';
     DistrictModule,
     RegionModule,
     TranslateModule,
-    LanguageModule
+    LanguageModule,
+    AuthModule
   ],
   controllers: [],
   providers:[],

@@ -80,30 +80,30 @@ model Definition {
 }
 
 model User {
-id   Int @id @default(autoincrement())
-name String 
-phone String 
-role Role_Type @default(user)
-hashed_password String
-hashed_token String 
-is_active Boolean @default(false)
-createAt           DateTime @default(now())
-updateAt           DateTime @updatedAt
-OrderTaxi         OrderTaxi[]
-OredrTruck        OrderTruck[]
+  id              Int          @id @default(autoincrement())
+  name            String
+  phone           String       @unique
+  role            Role_Type    @default(user)
+  hashed_password String
+  hashed_token    String
+  is_active       Boolean      @default(false)
+  createAt        DateTime     @default(now())
+  updateAt        DateTime     @updatedAt
+  OrderTaxi       OrderTaxi[]
+  OredrTruck      OrderTruck[]
 
-    @@map("user")
+  @@map("user")
 }
 
 model OrderTaxi {
   id            Int      @id @default(autoincrement())
-  User          User?    @relation(fields: [userId], references: [id])
-  userId        Int?
   to_district   String
   from_district String
   date          DateTime
   location      String
   description   String
+  User          User?    @relation(fields: [userId], references: [id])
+  userId        Int?
 }
 
 model OrderTruck {
@@ -125,7 +125,7 @@ model Driver {
   id              Int          @id @default(autoincrement())
   first_name      String
   last_name       String
-  phone           String
+  phone           String       @unique
   address         String
   photo           String
   driver_license  String
@@ -159,11 +159,11 @@ model Car {
 }
 
 model Driver_car {
-  id        Int @id @default(autoincrement())
-  carId    Int @map("carId")
-  driverId Int @map("driverId")
-  car    Car    @relation(fields: [carId], references: [id])
-  driver Driver @relation(fields: [driverId], references: [id])
+  id       Int    @id @default(autoincrement())
+  carId    Int    @map("carId")
+  driverId Int    @map("driverId")
+  car      Car    @relation(fields: [carId], references: [id])
+  driver   Driver @relation(fields: [driverId], references: [id])
 }
 
 model Region {
