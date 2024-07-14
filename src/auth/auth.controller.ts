@@ -1,9 +1,10 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Res, HttpCode, HttpStatus } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Res, HttpCode, HttpStatus, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { CreateAuthDto, LoginAuthDto, UpdateAuthDto } from './dto';
 import { Response } from 'express';
 
 import { CookieGetter, GetCurrentUser, GetCurrentUserId } from '../common/decorators';
+import { AccessTokenStrategy } from '../common/strategies';
 
 
 
@@ -25,6 +26,8 @@ export class AuthController {
     return this.authService.signIn(createAuthDto,res);
   }
 
+
+@UseGuards(AccessTokenStrategy)
 @Post('signout')
   async logout(
     @CookieGetter('refresh_token') refreshToken: string,
