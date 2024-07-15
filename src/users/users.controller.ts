@@ -1,68 +1,90 @@
 import {
   Controller,
-  Get,
   Post,
   Body,
-  Patch,
-  Param,
-  Delete,
+  Res,
+  HttpCode,
+  UseGuards,
+  HttpStatus,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
-// import { User } from './entities/user.entity';
+import { Response } from 'express';
+import { PhoneUserDto } from './dto/phone-user.dto';
+import { VerifyOtpDto } from './dto/verify-otp.dto';
+import { LoginUserDto } from './dto/login-user.dto';
+import { AccessTokenStrategy } from '../common/strategies';
+import { GetCurrentUser, GetCurrentUserId } from '../common/decorators';
 
 @ApiTags('users')
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  @Post()
+  @Post('signUp')
   @ApiOperation({ summary: 'Create a new user' })
   @ApiResponse({
     status: 201,
     description: 'The user has been successfully created.',
   })
   @ApiResponse({ status: 400, description: 'Bad Request.' })
-  create(@Body() createUserDto: CreateUserDto) {
-    return this.usersService.create(createUserDto);
+  async signUp(
+    @Body() createUserDto: CreateUserDto,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    return this.usersService.signUp(createUserDto, res);
   }
 
-  @Get()
-  @ApiOperation({ summary: 'Get all users' })
-  @ApiResponse({ status: 200, description: 'Return all users.' })
-  findAll() {
-    return this.usersService.findAll();
+  @Post('signIn')
+  @ApiOperation({ summary: 'User login' })
+  @ApiResponse({ status: 200, description: 'User logged in successfully.' })
+  @ApiResponse({ status: 400, description: 'Bad Request.' })
+  async signIn(
+    @Body() createUserDto: LoginUserDto,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    return this.usersService.signIn(createUserDto, res);
   }
 
-  @Get(':id')
-  @ApiOperation({ summary: 'Get a user by ID' })
-  @ApiResponse({ status: 200, description: 'Return the user.' })
-  @ApiResponse({ status: 404, description: 'User not found.' })
-  findOne(@Param('id') id: string) {
-    return this.usersService.findOne(+id);
+  @UseGuards(AccessTokenStrategy)
+  @Post('signOut')
+  @ApiOperation({ summary: 'User logout' })
+  @ApiResponse({ status: 200, description: 'User logged out successfully.' })
+  async signOut(
+    @GetCurrentUserId() userId: number,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    return this.usersService.signOut(userId, res);
   }
 
-  @Patch(':id')
-  @ApiOperation({ summary: 'Update a user' })
-  @ApiResponse({
-    status: 200,
-    description: 'The user has been successfully updated.',
-  })
-  @ApiResponse({ status: 404, description: 'User not found.' })
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.usersService.update(+id, updateUserDto);
+  @Post('refresh')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Refresh access token' })
+  @ApiResponse({ status: 200, description: 'Token refreshed successfully.' })
+  async refreshToken(
+    @GetCurrentUserId() userId: number,
+    @GetCurrentUser('refreshToken') refreshToken: string,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    return this.usersService.refreshToken(userId, refreshToken, res);
   }
 
-  @Delete(':id')
-  @ApiOperation({ summary: 'Delete a user' })
-  @ApiResponse({
-    status: 200,
-    description: 'The user has been successfully deleted.',
-  })
-  @ApiResponse({ status: 404, description: 'User not found.' })
-  remove(@Param('id') id: string) {
-    return this.usersService.remove(+id);
+  @HttpCode(200)
+  @Post('newOtp')
+  @ApiOperation({ summary: 'Generate new OTP' })
+  @ApiResponse({ status: 200, description: 'OTP generated successfully.' })
+  @ApiResponse({ status: 400, description: 'Bad Request.' })
+  newOtp(@Body() phoneUserDto: PhoneUserDto) {
+    return this.usersService.newOtp(phoneUserDto);
+  }
+
+  @HttpCode(200)
+  @Post('verifyOtp')
+  @ApiOperation({ summary: 'Verify OTP' })
+  @ApiResponse({ status: 200, description: 'OTP verified successfully.' })
+  @ApiResponse({ status: 400, description: 'Bad Request.' })
+  verifyOtp(@Body() verifyOtpDto: VerifyOtpDto) {
+    return this.usersService.verifyOtp(verifyOtpDto);
   }
 }

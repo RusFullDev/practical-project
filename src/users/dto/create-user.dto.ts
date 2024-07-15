@@ -1,33 +1,33 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEnum, IsBoolean, IsString } from 'class-validator';
-
-enum Role {
-  USER = 'user',
-  ADMIN = 'admin',
-}
+import { IsString } from 'class-validator';
 
 export class CreateUserDto {
-  @ApiProperty()
+  @ApiProperty({
+    description: 'The name of the user',
+    example: 'John Doe',
+  })
   @IsString()
-  name: string;
+  name?: string;
 
-  @ApiProperty()
+  @ApiProperty({
+    description: 'The phone number of the user',
+    example: '+1234567890',
+  })
   @IsString()
   phone: string;
 
-  @ApiProperty({ enum: Role, enumName: 'Role' })
-  @IsEnum(Role)
-  role: Role;
-
-  @ApiProperty()
+  @ApiProperty({
+    description: 'The password of the user',
+    example: 'password123',
+  })
   @IsString()
-  hashed_password: string;
+  password: string;
 
-  @ApiProperty()
+  @ApiProperty({
+    description: 'The confirmation of the password',
+    example: 'password123',
+  })
   @IsString()
-  hashed_token: string;
-
-  @ApiProperty()
-  @IsBoolean()
-  is_active: boolean;
+  confirm_password: string;
 }
+

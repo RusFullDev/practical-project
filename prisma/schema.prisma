@@ -80,17 +80,17 @@ model Definition {
 }
 
 model User {
-  id              Int          @id @default(autoincrement())
+  id              Int    @id @default(autoincrement())
+  phone           String @unique
   name            String
-  phone           String       @unique
-  role            Role_Type    @default(user)
   hashed_password String
-  hashed_token    String
-  is_active       Boolean      @default(false)
-  createAt        DateTime     @default(now())
-  updateAt        DateTime     @updatedAt
-  OrderTaxi       OrderTaxi[]
-  OredrTruck      OrderTruck[]
+
+  hashed_token String
+  is_active    Boolean      @default(false)
+  createAt     DateTime     @default(now())
+  updateAt     DateTime     @updatedAt
+  OrderTaxi    OrderTaxi[]
+  OredrTruck   OrderTruck[]
 
   @@map("user")
 }
@@ -177,4 +177,14 @@ model District {
   name      String
   region_id Int    @map("region_id")
   region    Region @relation(fields: [region_id], references: [id])
+}
+
+model Otp {
+  id              Int      @id @default(autoincrement())
+  otp             String
+  check           String
+  verified        Boolean
+  expiration_time DateTime
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
 }
