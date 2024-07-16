@@ -15,7 +15,6 @@ import { v4 } from 'uuid';
 import * as otpGenerator from 'otp-generator';
 import { LoginUserDto } from "./dto/login-user.dto";
 import { UpdateUserDto } from "./dto/update-user.dto";
-import passport from "passport";
 
 @Injectable()
 export class UsersService {
@@ -26,7 +25,8 @@ export class UsersService {
 
   /*********************************getToken********************************************/
   async getTokens(user: User) {
-    const payload = {
+    try {
+      const payload = {
       id: user.id,
       phone: user.phone,
     };
@@ -45,11 +45,17 @@ export class UsersService {
       access_token: accessToken,
       refresh_token: refreshToken,
     };
+    } catch (error) {
+      console.log(error);
+      
+    }
+    
   }
 
   /*************************************updateRefreshToken*****************************************************/
   async updateRefreshToken(user: User, refreshToken: string) {
-    const hashedRefreshToken = await bcrypt.hash(refreshToken, 7);
+    try {
+       const hashedRefreshToken = await bcrypt.hash(refreshToken, 7);
     await this.prismaService.user.update({
       where: {
         id: user.id,
@@ -58,6 +64,11 @@ export class UsersService {
         hashed_token: hashedRefreshToken,
       },
     });
+    } catch (error) {
+      console.log(error);
+      
+    }
+   
   }
 
   /****************************************signUp**********************************************/
@@ -65,7 +76,7 @@ export class UsersService {
     createUserDto: CreateUserDto,
     res: Response
   ) {
-    const user = await this.prismaService.user.findUnique({
+const user = await this.prismaService.user.findUnique({
       where: {
         phone: createUserDto.phone,
       }
@@ -93,6 +104,13 @@ if(createUserDto.password != createUserDto.confirm_password){
       httpOnly: true
     })
     return tokens
+try {
+
+} catch (error) {
+  console.log(error);
+  
+}
+   
   }
 
   /************************************************signIn********************************************************* */
@@ -156,17 +174,16 @@ if(createUserDto.password != createUserDto.confirm_password){
   /****************************************refreshToken*********************************************** */
 
   async refreshToken(userId: number, refreshToken: string, res: Response) {
+   try {
+     
     const user = await this.prismaService.user.findUnique({
       where: {
         id: userId
       }
     })
-
     if (!user || !user.hashed_token) {
       throw new BadRequestException('server not found');
     }
-
-
     const newUser = await this.prismaService.user.findUnique({ where: { id: userId } });
 
     if (!newUser || !newUser.hashed_token) {
@@ -199,12 +216,17 @@ if(createUserDto.password != createUserDto.confirm_password){
 
 
     return tokens;
+   } catch (error) {
+    console.log(error);
+    
+   }
 
   }
 
   /*******************************NewOtp*******************************/
   async newOtp(phoneUserDto: PhoneUserDto) {
-    const phone = phoneUserDto.phone;
+    try {
+       const phone = phoneUserDto.phone;
     const otp = otpGenerator.generate(4, {
       upperCaseAlphabets: false,
       lowerCaseAlphabets: false,
@@ -257,10 +279,16 @@ if(createUserDto.password != createUserDto.confirm_password){
     } else {
       throw new BadRequestException("User already exists");
     }
+    } catch (error) {
+      console.log(error);
+      
+    }
+   
   }
   /*****************************************verifyOtp********************************************* */
   async verifyOtp(verifyOtpDto: VerifyOtpDto) {
-    const { verification_key, otp, check } = verifyOtpDto;
+    try {
+      const { verification_key, otp, check } = verifyOtpDto;
     const currentDate = new Date();
     const decoded = await decode(verification_key);
     const details = JSON.parse(decoded);
@@ -311,26 +339,37 @@ if(createUserDto.password != createUserDto.confirm_password){
     };
 
     return response;
+    } catch (error) {
+      console.log(error);
+      
+    }
+    
   }
 
 /******************************************updateUser******************************** */
   async updateUser(id:number,updateUserDto:UpdateUserDto){
+    try {
+        const{password}  = updateUserDto
     const newUser = await this.prismaService.user.findUnique({where:{id}})
 if (!newUser) {
   throw new BadRequestException('User not found')
 }
-const matchPassword = await bcrypt.compare(updateUserDto.password,newUser.hashed_password)
+const matchPassword = await bcrypt.compare(password,newUser.hashed_password)
 if(!matchPassword){
   throw new BadRequestException('Password not match')
 }
-const hashed_password = await bcrypt.hash(updateUserDto.password,7)
+const hashed_password = await bcrypt.hash(password,7)
+
 const updateUser = await this.prismaService.user.update({where:{id},data:{
   hashed_password,...updateUserDto}
 }
   )
-  
     return updateUser
+    } catch (error) {
+      console.log('error',error);
+      
+    }
+  
   }
-
 }
 

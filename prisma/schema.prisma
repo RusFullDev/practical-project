@@ -18,11 +18,7 @@ enum Status {
   inactive @map("inactive")
 }
 
-enum Role_Type {
-  teacher @map("teacher")
-  admin   @map("admin")
-  user    @map("user")
-}
+
 
 enum Cargo_type {
   post @map("post")
@@ -104,6 +100,8 @@ model OrderTaxi {
   description   String
   User          User?  @relation(fields: [userId], references: [id])
   userId        Int?
+  distance      String
+  duration      String
 }
 
 model OrderTruck {
@@ -119,6 +117,8 @@ model OrderTruck {
   from_district   String
   location        String
   description     String
+  distance        String
+  duration        String
 }
 
 model Driver {
