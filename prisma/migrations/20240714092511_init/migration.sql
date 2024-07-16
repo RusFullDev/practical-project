@@ -52,7 +52,7 @@ CREATE TABLE "user" (
     "role" "Role_Type" NOT NULL DEFAULT 'user',
     "hashed_password" TEXT NOT NULL,
     "hashed_token" TEXT NOT NULL,
-    "is_active" BOOLEAN NOT NULL,
+    "is_active" BOOLEAN NOT NULL DEFAULT false,
     "createAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updateAt" TIMESTAMP(3) NOT NULL,
 
@@ -62,12 +62,12 @@ CREATE TABLE "user" (
 -- CreateTable
 CREATE TABLE "OrderTaxi" (
     "id" SERIAL NOT NULL,
-    "userId" INTEGER,
     "to_district" TEXT NOT NULL,
     "from_district" TEXT NOT NULL,
     "date" TIMESTAMP(3) NOT NULL,
     "location" TEXT NOT NULL,
     "description" TEXT NOT NULL,
+    "userId" INTEGER,
 
     CONSTRAINT "OrderTaxi_pkey" PRIMARY KEY ("id")
 );
@@ -95,12 +95,12 @@ CREATE TABLE "Driver" (
     "first_name" TEXT NOT NULL,
     "last_name" TEXT NOT NULL,
     "phone" TEXT NOT NULL,
-    "Address" TEXT NOT NULL,
+    "address" TEXT NOT NULL,
     "photo" TEXT NOT NULL,
     "driver_license" TEXT NOT NULL,
-    "is_active" BOOLEAN NOT NULL,
-    "hashed_token" TEXT NOT NULL,
-    "hashed_password" TEXT NOT NULL,
+    "is_active" BOOLEAN,
+    "hashed_token" TEXT,
+    "hashed_password" TEXT,
     "total_balance" DECIMAL(65,30) NOT NULL,
 
     CONSTRAINT "Driver_pkey" PRIMARY KEY ("id")
@@ -133,8 +133,8 @@ CREATE TABLE "Car" (
 -- CreateTable
 CREATE TABLE "Driver_car" (
     "id" SERIAL NOT NULL,
-    "car_id" INTEGER NOT NULL,
-    "driver_id" INTEGER NOT NULL,
+    "carId" INTEGER NOT NULL,
+    "driverId" INTEGER NOT NULL,
 
     CONSTRAINT "Driver_car_pkey" PRIMARY KEY ("id")
 );
@@ -162,6 +162,12 @@ CREATE UNIQUE INDEX "language_code_key" ON "language"("code");
 -- CreateIndex
 CREATE UNIQUE INDEX "translate_code_key" ON "translate"("code");
 
+-- CreateIndex
+CREATE UNIQUE INDEX "user_phone_key" ON "user"("phone");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Driver_phone_key" ON "Driver"("phone");
+
 -- AddForeignKey
 ALTER TABLE "definition" ADD CONSTRAINT "definition_translate_id_fkey" FOREIGN KEY ("translate_id") REFERENCES "translate"("id") ON DELETE CASCADE ON UPDATE NO ACTION;
 
@@ -178,10 +184,10 @@ ALTER TABLE "OrderTruck" ADD CONSTRAINT "OrderTruck_userId_fkey" FOREIGN KEY ("u
 ALTER TABLE "Balance" ADD CONSTRAINT "Balance_driverId_fkey" FOREIGN KEY ("driverId") REFERENCES "Driver"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Driver_car" ADD CONSTRAINT "Driver_car_car_id_fkey" FOREIGN KEY ("car_id") REFERENCES "Car"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Driver_car" ADD CONSTRAINT "Driver_car_carId_fkey" FOREIGN KEY ("carId") REFERENCES "Car"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Driver_car" ADD CONSTRAINT "Driver_car_driver_id_fkey" FOREIGN KEY ("driver_id") REFERENCES "Driver"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Driver_car" ADD CONSTRAINT "Driver_car_driverId_fkey" FOREIGN KEY ("driverId") REFERENCES "Driver"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "District" ADD CONSTRAINT "District_region_id_fkey" FOREIGN KEY ("region_id") REFERENCES "Region"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
