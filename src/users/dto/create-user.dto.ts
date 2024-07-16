@@ -7,7 +7,7 @@ export class CreateUserDto {
     example: 'John Doe',
   })
   @IsString()
-  name?: string;
+  name: string;
 
   @ApiProperty({
     description: 'The phone number of the user',

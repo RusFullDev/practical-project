@@ -96,13 +96,13 @@ model User {
 }
 
 model OrderTaxi {
-  id            Int      @id @default(autoincrement())
+  id            Int    @id @default(autoincrement())
   to_district   String
   from_district String
-  date          DateTime
+  date          String
   location      String
   description   String
-  User          User?    @relation(fields: [userId], references: [id])
+  User          User?  @relation(fields: [userId], references: [id])
   userId        Int?
 }
 
@@ -187,4 +187,14 @@ model Otp {
   expiration_time DateTime
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
+}
+
+model Admin {
+  id              Int     @id @default(autoincrement())
+  name            String
+  phone           String
+  hashed_password String
+  hashed_token    String
+  is_active       Boolean @default(false)
+  is_creater      Boolean @default(false)
 }

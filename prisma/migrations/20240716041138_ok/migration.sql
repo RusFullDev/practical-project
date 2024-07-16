@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "OrderTaxi" ALTER COLUMN "date" SET DATA TYPE TEXT;

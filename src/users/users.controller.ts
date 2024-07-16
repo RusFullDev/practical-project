@@ -6,6 +6,8 @@ import {
   HttpCode,
   UseGuards,
   HttpStatus,
+  Patch,
+  Param,
 } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { UsersService } from './users.service';
@@ -16,6 +18,7 @@ import { VerifyOtpDto } from './dto/verify-otp.dto';
 import { LoginUserDto } from './dto/login-user.dto';
 import { AccessTokenStrategy } from '../common/strategies';
 import { GetCurrentUser, GetCurrentUserId } from '../common/decorators';
+import { UpdateUserDto } from './dto/update-user.dto';
 
 @ApiTags('users')
 @Controller('users')
@@ -87,4 +90,14 @@ export class UsersController {
   verifyOtp(@Body() verifyOtpDto: VerifyOtpDto) {
     return this.usersService.verifyOtp(verifyOtpDto);
   }
+
+@HttpCode(200)
+ @Patch(':id')
+   @ApiOperation({ summary: 'Update User' })
+  @ApiResponse({ status: 200, description: 'Update User successfully.' })
+  @ApiResponse({ status: 400, description: 'Bad Request.' })
+  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
+    return this.usersService.updateUser(+id, updateUserDto);
+  }
+
 }
