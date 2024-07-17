@@ -66,12 +66,4 @@ export class UpdateDriverDto {
   @IsString()
   @MinLength(8) // Example validation rule: Minimum password length
   hashed_password?: string;
-
-  @ApiPropertyOptional({
-    example: 1000.0,
-    description: 'The updated total balance of the driver',
-  })
-  @IsOptional()
-  @IsNumber()
-  total_balance?: number;
 }

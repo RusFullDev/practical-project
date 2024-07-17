@@ -18,8 +18,6 @@ enum Status {
   inactive @map("inactive")
 }
 
-
-
 enum Cargo_type {
   post @map("post")
   load @map("load")
@@ -92,13 +90,13 @@ model User {
 }
 
 model OrderTaxi {
-  id            Int    @id @default(autoincrement())
+  id            Int     @id @default(autoincrement())
   to_district   String
   from_district String
-  date          String
-  location      String
+  date          DateTime
+  location      String?
   description   String
-  User          User?  @relation(fields: [userId], references: [id])
+  User          User?   @relation(fields: [userId], references: [id])
   userId        Int?
   distance      String
   duration      String
@@ -115,7 +113,7 @@ model OrderTruck {
   recipient_phone String
   to_district     String
   from_district   String
-  location        String
+  location        String?
   description     String
   distance        String
   duration        String
@@ -132,7 +130,7 @@ model Driver {
   is_active       Boolean? // Optional
   hashed_token    String? // Optional
   hashed_password String? // Optional
-  total_balance   Decimal @default(0)
+  total_balance   Decimal      @default(0)
   balance         Balance[]
   driver_car      Driver_car[]
 }

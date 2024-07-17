@@ -1,14 +1,19 @@
-import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
-import { CreateOrderTruckDto } from './dto/create-order_truck.dto';
-import { UpdateOrderTruckDto } from './dto/update-order_truck.dto';
-import { PrismaService } from '../prisma/prisma.service';
-import axios from 'axios';
+import {
+  BadRequestException,
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from "@nestjs/common";
+import { CreateOrderTruckDto } from "./dto/create-order_truck.dto";
+import { UpdateOrderTruckDto } from "./dto/update-order_truck.dto";
+import { PrismaService } from "../prisma/prisma.service";
+import axios from "axios";
 
 @Injectable()
 export class OrderTruckService {
   constructor(private readonly prismaService: PrismaService) {}
 
- async getCoordinates(
+  async getCoordinates(
     name: string
   ): Promise<{ latitude: number; longitude: number }> {
     try {
@@ -33,7 +38,6 @@ export class OrderTruckService {
     }
   }
 
-  
   async create(createOrderTruckDto: CreateOrderTruckDto) {
     try {
       const { from_district, to_district } = createOrderTruckDto;
@@ -76,9 +80,6 @@ export class OrderTruckService {
     }
   }
 
-
-
-
   findAll() {
     return this.prismaService.orderTruck.findMany();
   }
@@ -96,7 +97,7 @@ export class OrderTruckService {
       });
 
       if (!userExists) {
-        throw new BadRequestException('User does not exist');
+        throw new BadRequestException("User does not exist");
       }
     }
 

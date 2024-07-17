@@ -1,4 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
+import { Type } from "class-transformer";
 import { IsString, IsDate, IsNumber } from "class-validator";
 
 export class CreateOrderTaxiDto {
@@ -23,19 +24,10 @@ export class CreateOrderTaxiDto {
   @IsString()
   to_district: string;
 
-  @ApiProperty({
-    example: "2024-07-11T10:30:00Z",
-    description: "The date and time of the order",
-  })
+ @ApiProperty({ example: '2001-01-01' })
   @IsDate()
+  @Type(() => Date)
   date: string;
-
-  @ApiProperty({
-    example: "123 Main St, Central District",
-    description: "The exact location of the pickup point",
-  })
-  @IsString()
-  location: string;
 
   @ApiProperty({
     example: "Need a ride to the airport",
@@ -43,5 +35,6 @@ export class CreateOrderTaxiDto {
   })
   @IsString()
   description: string;
+  
 
 }
