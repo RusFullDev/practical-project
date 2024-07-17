@@ -8,22 +8,26 @@ import {
 import { PrismaService } from '../prisma/prisma.service';
 import { Language } from '@prisma/client';
 import { isUUID } from 'class-validator';
+import { FilesService } from '../file/file.service';
 
 @Injectable()
 export class LanguageService {
   #_prisma: PrismaService;
+  #_files: FilesService;
 
-  constructor(prisma: PrismaService) {
+  constructor(prisma: PrismaService, file: FilesService) {
     this.#_prisma = prisma;
+    this.#_files = file
   }
 
   async createLanguage(payload: CreateLanguageRequest): Promise<void> {
     await this.#_checkExistingLanguage(payload.code);
+    const file = await this.#_files.createFile(payload.image);
     await this.#_prisma.language.create({
       data: {
         code: payload.code,
         title: payload.title,
-        image_url: "test",
+        image_url: `http://localhost:3003/api/uploads/${file}`,
       },
     });
   }
