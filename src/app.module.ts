@@ -34,9 +34,9 @@ import { DriverCarModule } from './driver_car/driver_car.module';
     RegionModule,
     TranslateModule,
     LanguageModule,
-    FilesModule
-    AdminModule,
-    DriverCarModule
+    FilesModule,
+    DriverCarModule,
+    AdminModule
   ],
   controllers: [],
   providers:[],

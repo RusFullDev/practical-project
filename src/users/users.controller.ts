@@ -4,23 +4,22 @@ import {
   Body,
   Res,
   HttpCode,
-  UseGuards,
   HttpStatus,
   Patch,
   Param,
+  Get,
+  Delete,
+  Put,
 } from "@nestjs/common";
-import { ApiTags, ApiOperation, ApiResponse } from "@nestjs/swagger";
+import { ApiTags, ApiOperation, ApiResponse, ApiParam } from "@nestjs/swagger";
 import { UsersService } from "./users.service";
 import { CreateUserDto } from "./dto/create-user.dto";
 import { Response } from "express";
 import { PhoneUserDto } from "./dto/phone-user.dto";
 import { VerifyOtpDto } from "./dto/verify-otp.dto";
 import { LoginUserDto } from "./dto/login-user.dto";
-import { AccessTokenStrategy } from "../common/strategies";
 import {
   CookieGetter,
-  GetCurrentUser,
-  GetCurrentUserId,
 } from "../common/decorators";
 import { UpdateUserDto } from "./dto/update-user.dto";
 
@@ -54,17 +53,6 @@ export class UsersController {
     return this.usersService.signIn(createUserDto, res);
   }
 
-  // @UseGuards(AccessTokenStrategy)
-  // @Post("signOut")
-  // @ApiOperation({ summary: "User logout" })
-  // @ApiResponse({ status: 200, description: "User logged out successfully." })
-  // async signOut(
-  //   @CookieGetter('refresh_token') refreshToken: string,
-  //   @GetCurrentUserId() userId: number,
-  //   @Res({ passthrough: true }) res: Response
-  // ) {
-  //   return this.usersService.signOut(userId, res);
-  // }
 
 @HttpCode(200)
   @Post('signOut')
@@ -82,11 +70,9 @@ export class UsersController {
   @ApiResponse({ status: 200, description: "Token refreshed successfully." })
   async refreshToken(
     @CookieGetter('refresh_token') refreshToken: string,
-    @GetCurrentUserId() userId: number,
-    // @GetCurrentUser("refreshToken") refreshToken: string,
     @Res({ passthrough: true }) res: Response
   ) {
-    return this.usersService.refreshToken(userId, refreshToken, res);
+    return this.usersService.refreshToken(refreshToken, res);
   }
 
   @HttpCode(200)
@@ -108,11 +94,33 @@ export class UsersController {
   }
 
   @HttpCode(200)
-  @Patch(":id")
+  @Put(":id")
   @ApiOperation({ summary: "Update User" })
   @ApiResponse({ status: 200, description: "Update User successfully." })
   @ApiResponse({ status: 400, description: "Bad Request." })
   update(@Param("id") id: string, @Body() updateUserDto: UpdateUserDto) {
     return this.usersService.updateUser(+id, updateUserDto);
+  }
+
+
+ @ApiOperation({ summary: 'Get all users' })
+  @Get()
+  async findAll() {
+    return this.usersService.findAll();
+  }
+
+  @ApiOperation({ summary: 'Get a user by ID' })
+  @ApiParam({ name: 'id', type: 'number' })
+  @Get(':id')
+  async findOne(@Param('id') id: string) {
+    return this.usersService.findOne(+id);
+  }
+
+
+  @ApiOperation({ summary: 'Delete a user by ID' })
+  @ApiParam({ name: 'id', type: 'number' })
+  @Delete(':id')
+  async remove(@Param('id') id: string) {
+    return this.usersService.remove(+id);
   }
 }

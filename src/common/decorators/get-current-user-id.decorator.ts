@@ -9,7 +9,9 @@ export const GetCurrentUserId = createParamDecorator(
   (_: undefined, context: ExecutionContext): number => {
     const request = context.switchToHttp().getRequest();
     const user = request.user as JwtPayload;
-    // console.log(request);
+    // console.log(request.user);
+    // console.log(user);
+    
     
     if (!user) throw new ForbiddenException("Token noto'g'ri");
     console.log("user:", user);

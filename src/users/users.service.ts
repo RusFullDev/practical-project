@@ -166,74 +166,26 @@ export class UsersService {
 
   /****************************************refreshToken*********************************************** */
 
-  // async refreshToken(userId: number, refreshToken: string, res: Response) {
-  //  try {
-
-  //   const user = await this.prismaService.user.findUnique({
-  //     where: {
-  //       id: userId
-  //     }
-  //   })
-  //   if (!user || !user.hashed_token) {
-  //     throw new BadRequestException('server not found');
-  //   }
-
-  //   const newUser = await this.prismaService.user.findUnique({ where: { id: userId } });
-  //   if (!newUser || !newUser.hashed_token) {
-  //     throw new BadRequestException('User not found');
-  //   }
-  //   const tokenMatch = await bcrypt.compare(
-  //     refreshToken,
-  //     newUser.hashed_token
-  //   );
-
-  //   if (!tokenMatch) {
-  //     throw new ForbiddenException('Forbidden');
-  //   }
-
-  //   const tokens = await this.getTokens(newUser);
-  //   await bcrypt.hash(tokens.refresh_token, 7);
-  //   const checkUser = await this.prismaService.user.findUnique({ where: { id: newUser.id } })
-  //   if (!checkUser) {
-  //     throw new BadRequestException('user not Found');
-  //   }
-
-  //   await this.updateRefreshToken(newUser, tokens.refresh_token)
-
-  //   res.cookie("refresh_token", tokens.refresh_token,
-  //     {
-  //       maxAge: Number(process.env.COOKIE_TIME),
-  //       httpOnly: true,
-  //     })
-  //   return tokens;
-  //  } catch (error) {
-  //   console.log(error);
-
-  //  }
-
-  // }
-
-  async refreshToken(userId: number, refreshToken: string, res: Response) {
+  async refreshToken(refreshToken: string, res: Response) {
     const decodedToken = await this.jwtService.decode(refreshToken);
-    if (userId !== decodedToken["id"]) {
+    const newUser= await this.prismaService.user.findUnique({where:{id:decodedToken["id"]}})
+    if (!newUser) {
       throw new BadRequestException("Refresh token is invalid");
     }
-    const user = await this.prismaService.user.findUnique({
-      where: { id: userId },
-    });
-    if (!user || !user.hashed_token) {
+   
+    if (!newUser || !newUser.hashed_token) {
       throw new BadRequestException("user does not exist");
     }
-    const tokenMatch = await bcrypt.compare(refreshToken, user.hashed_token);
+    const tokenMatch = await bcrypt.compare(refreshToken, newUser.hashed_token);
 
     if (!tokenMatch) {
       throw new ForbiddenException("Forbidden");
     }
 
-    const tokens = await this.getTokens(user);
+    const tokens = await this.getTokens(newUser);
     const hashed_refresh_token = await bcrypt.hash(tokens.refresh_token, 7);
     const updatedUser = await this.prismaService.user.update({
-      where: { id: user.id },
+      where: { id: newUser.id },
       data: {
         hashed_token: hashed_refresh_token,
       },
@@ -368,34 +320,111 @@ export class UsersService {
   }
 
   /******************************************updateUser******************************** */
-  async updateUser(id: number, updateUserDto: UpdateUserDto) {
+  // async updateUser(id: number, updateUserDto: UpdateUserDto) {
+  //   try {
+    
+  //     const newUser = await this.prismaService.user.findUnique({
+  //       where: { id },
+  //     });
+  //     if (!newUser) {
+  //       throw new BadRequestException("User not found");
+  //     }
+  //     const matchPassword = await bcrypt.compare(
+  //       updateUserDto.password,
+  //       newUser.hashed_password
+  //     );
+  //     if (!matchPassword) {
+  //       throw new BadRequestException("Password not match");
+  //     }
+  //     const hashed_password = await bcrypt.hash(updateUserDto.password, 7);
+
+  //     const updateUser = await this.prismaService.user.update({
+  //       where: { id },
+  //       data: {
+  //         hashed_password,
+  //         ...updateUserDto,
+  //       },
+  //     });
+  //     return updateUser;
+  //   } catch (error) {
+  //     console.log("error", error);
+  //      throw new BadRequestException("Password not match");
+  //   }
+  // }
+
+ async updateUser(id: number, updateUserDto: UpdateUserDto) {
     try {
-      const { password } = updateUserDto;
-      const newUser = await this.prismaService.user.findUnique({
+      
+      const user = await this.prismaService.user.findUnique({
         where: { id },
       });
-      if (!newUser) {
-        throw new BadRequestException("User not found");
-      }
-      const matchPassword = await bcrypt.compare(
-        password,
-        newUser.hashed_password
-      );
-      if (!matchPassword) {
-        throw new BadRequestException("Password not match");
-      }
-      const hashed_password = await bcrypt.hash(password, 7);
 
-      const updateUser = await this.prismaService.user.update({
+      if (!user) {
+        throw new BadRequestException('User not found');
+      }
+
+      if (updateUserDto.hashed_password) {
+        const matchPassword = await bcrypt.compare(
+          updateUserDto.hashed_password,
+          user.hashed_password
+        );
+
+        if (!matchPassword) {
+          throw new BadRequestException('Password not match');
+        }
+
+        updateUserDto.hashed_password = await bcrypt.hash(updateUserDto.hashed_password, 7);
+      }
+
+      
+      const updatedUser = await this.prismaService.user.update({
         where: { id },
         data: {
-          hashed_password,
           ...updateUserDto,
         },
       });
-      return updateUser;
+
+      return updatedUser;
     } catch (error) {
-      console.log("error", error);
+      console.error('Error updating user:', error);
+      throw new BadRequestException('Failed to update user');
     }
   }
+
+/*****************************findAll********************************************************/
+async findAll() {
+    try {
+      return await this.prismaService.user.findMany();
+    } catch (error) {
+      throw new Error(`Error finding users: ${error.message}`);
+    }
+  }
+/********************************************************FinOne*********************************** */
+  async findOne(id: number) {
+    try {
+      return await this.prismaService.user.findUnique({
+        where: {
+          id: id,
+        },
+      });
+    } catch (error) {
+      throw new Error(`Error finding user with ID ${id}: ${error.message}`);
+    }
+  }
+
+  /************************************************Delete************************************ */
+ async remove(id: number) {
+    try {
+      return await this.prismaService.user.delete({
+        where: {
+          id: id,
+        },
+      });
+    } catch (error) {
+      throw new Error(`Error deleting user with ID ${id}: ${error.message}`);
+    }
+  }
+
+
+
 }
