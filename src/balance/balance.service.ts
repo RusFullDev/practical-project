@@ -12,13 +12,13 @@ export class BalanceService {
   constructor(private readonly prismaService: PrismaService) {}
 
   async create(createBalanceDto: CreateBalanceDto) {
-    const { driver_id } = createBalanceDto;
+    const { driverId } = createBalanceDto;
     const driver = await this.prismaService.driver.findUnique({
-      where: { id: driver_id },
+      where: { id: driverId },
     });
 
     if (!driver) {
-      throw new NotFoundException(`Driver with ID ${driver_id} not found`);
+      throw new NotFoundException(`Driver with ID ${driverId} not found`);
     }
 
     try {
@@ -66,13 +66,13 @@ export class BalanceService {
       throw new NotFoundException(`Balance with ID ${id} not found`);
     }
 
-    if (updateBalanceDto.driver_id) {
+    if (updateBalanceDto.driverId) {
       const driver = await this.prismaService.driver.findUnique({
-        where: { id: updateBalanceDto.driver_id },
+        where: { id: updateBalanceDto.driverId },
       });
       if (!driver) {
         throw new NotFoundException(
-          `Driver with ID ${updateBalanceDto.driver_id} not found`,
+          `Driver with ID ${updateBalanceDto.driverId} not found`,
         );
       }
     }

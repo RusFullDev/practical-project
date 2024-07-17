@@ -12,6 +12,7 @@ import { RegionModule } from './region/region.module';
 import { TranslateModule } from './translate/translate.module';
 import { LanguageModule } from './language/language.module';
 import { AdminModule } from './admin/admin.module';
+import { DriverCarModule } from './driver_car/driver_car.module';
 
 
 
@@ -30,6 +31,7 @@ import { AdminModule } from './admin/admin.module';
     TranslateModule,
     LanguageModule,
     AdminModule,
+    DriverCarModule
   ],
   controllers: [],
   providers:[],

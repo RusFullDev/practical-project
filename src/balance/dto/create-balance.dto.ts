@@ -13,8 +13,8 @@ export class CreateBalanceDto {
   amount: number;
 
   @ApiProperty({ example: 1, description: 'The ID of the driver' })
-  @IsInt()
-  driver_id: number;
+  @IsNumber()
+  driverId: number;
 
   @ApiProperty({
     example: '2024-07-10T08:00:00.000Z',
@@ -23,11 +23,4 @@ export class CreateBalanceDto {
   @IsDateString()
   date: Date;
 
-  @ApiProperty({
-    enum: TransferType,
-    example: TransferType.Taxi,
-    description: 'The type of transfer (taxi or truck)',
-  })
-  @IsEnum(TransferType)
-  transfer_type: TransferType;
 }

@@ -132,7 +132,7 @@ model Driver {
   is_active       Boolean? // Optional
   hashed_token    String? // Optional
   hashed_password String? // Optional
-  total_balance   Decimal
+  total_balance   Decimal @default(0)
   balance         Balance[]
   driver_car      Driver_car[]
 }

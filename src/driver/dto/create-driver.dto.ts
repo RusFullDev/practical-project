@@ -49,35 +49,14 @@ export class CreateDriverDto {
   @IsNotEmpty()
   driver_license: string;
 
-  @ApiProperty({
-    example: 1000.0,
-    description: 'The total balance of the driver',
-  })
-  @IsNumber()
-  @IsNotEmpty()
-  total_balance: number;
-
-  @ApiProperty({
-    example: 'hashedtoken123',
-    description: 'The hashed token for authentication (optional)',
-  })
-  @IsOptional()
-  @IsString()
-  hashed_token?: string;
-
+ 
   @ApiProperty({
     example: 'hashedpassword123',
     description: 'The hashed password for authentication (optional)',
   })
   @IsOptional()
   @IsString()
-  hashed_password?: string;
+  hashed_password: string;
 
-  @ApiProperty({
-    example: true,
-    description: 'Whether the driver is active (optional)',
-  })
-  @IsOptional()
-  @IsBoolean()
-  is_active?: boolean;
+
 }
