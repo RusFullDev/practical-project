@@ -14,9 +14,7 @@ import { LanguageModule } from './language/language.module';
 import {ServeStaticModule} from '@nestjs/serve-static';
 import { join } from 'path';
 import { FilesModule } from './file/file.module';
-
-
-
+import { AdminModule } from './admin/admin.module';
 
 @Module({
   imports: [ 
@@ -36,6 +34,7 @@ import { FilesModule } from './file/file.module';
     TranslateModule,
     LanguageModule,
     FilesModule
+    AdminModule,
   ],
   controllers: [],
   providers:[],
