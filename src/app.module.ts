@@ -11,13 +11,17 @@ import { DistrictModule } from './district/district.module';
 import { RegionModule } from './region/region.module';
 import { TranslateModule } from './translate/translate.module';
 import { LanguageModule } from './language/language.module';
+import {ServeStaticModule} from '@nestjs/serve-static';
+import { join } from 'path';
+import { CloudinaryModule } from './cloudinary/cloudinary.module';
 import { AdminModule } from './admin/admin.module';
-
-
-
-
+import { DriverCarModule } from './driver_car/driver_car.module';
 @Module({
-  imports: [ConfigModule.forRoot({isGlobal:true,envFilePath:'.env'}),
+  imports: [ 
+    ServeStaticModule.forRoot({
+      rootPath: join(process.cwd(), 'uploads'),
+    }),
+    ConfigModule.forRoot({isGlobal:true,envFilePath:'.env'}),
     PrismaModule,
     UsersModule,
     OrderTaxiModule,
@@ -29,7 +33,9 @@ import { AdminModule } from './admin/admin.module';
     RegionModule,
     TranslateModule,
     LanguageModule,
-    AdminModule,
+    CloudinaryModule,
+    DriverCarModule,
+    AdminModule
   ],
   controllers: [],
   providers:[],

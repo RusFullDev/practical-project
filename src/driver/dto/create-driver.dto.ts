@@ -30,9 +30,7 @@ export class CreateDriverDto {
   @IsNotEmpty()
   driver_license: string;
 
-  // @IsDecimal()
-  // @IsNotEmpty()
-  // total_balance: string; // Decimal is treated as string in DTO
+
 
 
 }

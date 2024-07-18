@@ -22,9 +22,9 @@ export class UpdateBalanceDto {
   amount?: number;
 
   @ApiProperty({ example: 1, description: 'The ID of the driver' })
-  @IsInt()
+  @IsNumber()
   @IsOptional()
-  driver_id?: number;
+  driverId?: number;
 
   @ApiProperty({
     example: '2024-07-10T08:00:00.000Z',

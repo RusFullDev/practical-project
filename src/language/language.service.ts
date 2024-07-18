@@ -1,29 +1,27 @@
 import { CreateLanguageRequest, UpdateLanguageRequest } from './interfaces';
-import {
-  BadRequestException,
-  ConflictException,
-  Injectable,
-  UnprocessableEntityException,
-} from '@nestjs/common';
+import { ConflictException, Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { Language } from '@prisma/client';
-import { isUUID } from 'class-validator';
+import { CloudinaryService } from '../cloudinary/cloudinary.service';
 
 @Injectable()
 export class LanguageService {
   #_prisma: PrismaService;
+  #_files: CloudinaryService;
 
-  constructor(prisma: PrismaService) {
+  constructor(prisma: PrismaService, file: CloudinaryService) {
     this.#_prisma = prisma;
+    this.#_files = file;
   }
 
   async createLanguage(payload: CreateLanguageRequest): Promise<void> {
     await this.#_checkExistingLanguage(payload.code);
+    const file = await (await this.#_files.uploadImage(payload.image)).url;
     await this.#_prisma.language.create({
       data: {
         code: payload.code,
         title: payload.title,
-        image_url: "test",
+        image_url: file,
       },
     });
   }
@@ -38,20 +36,6 @@ export class LanguageService {
       where: { id: payload.id },
     });
 
-    // if (payload.image) {
-    //   await this.#_minio
-    //     .removeFile({ fileName: foundedImage.image_url })
-    //     .catch((undefined) => undefined);
-    //   const file = await this.#_minio.uploadFile({
-    //     file: payload.image,
-    //     bucket: 'demo',
-    //   });
-      // await this.#_prisma.language.update({
-      //   where: { id: payload.id },
-      //   data: { image_url: file.fileName },
-      // });
-    // }
-
     if (payload.title) {
       await this.#_prisma.language.update({
         data: { title: payload.title },
@@ -65,10 +49,6 @@ export class LanguageService {
     const deletedImage = await this.#_prisma.language.findFirst({
       where: { id: id },
     });
-
-    // await this.#_minio
-    //   .removeFile({ fileName: deletedImage.image_url })
-    //   .catch((undefined) => undefined);
 
     await this.#_prisma.language.delete({ where: { id } });
   }

@@ -20,9 +20,5 @@ export class UpdateOrderTaxiDto {
 
   @ApiProperty()
   @IsString()
-  location?: string;
-
-  @ApiProperty()
-  @IsString()
   description?: string;
 }

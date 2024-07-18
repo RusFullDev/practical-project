@@ -4,20 +4,15 @@ import {
   IsNumber,
   IsOptional,
   IsDate,
-  IsEnum,
 } from 'class-validator';
 import { Type } from 'class-transformer';
-import { Cargo_type } from '@prisma/client';
+
 
 export class CreateOrderTruckDto {
   @ApiProperty({ required: false })
   @IsOptional()
   @IsNumber()
-  userId?: number;
-
-  @ApiProperty({ enum: Cargo_type, example: 'load' })
-  @IsEnum(Cargo_type)
-  cargo_type: Cargo_type;
+  userId: number;
 
   @ApiProperty({ example: '2001-01-01' })
   @IsDate()
@@ -43,10 +38,6 @@ export class CreateOrderTruckDto {
   @ApiProperty({ example: 'tashkent' })
   @IsString()
   from_district: string;
-
-  @ApiProperty({ example: 'yunusobod megaplaneta yonida' })
-  @IsString()
-  location: string;
 
   @ApiProperty({ example: 'komentaria' })
   @IsString()
