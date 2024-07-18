@@ -1,28 +1,33 @@
-import { BadRequestException, ForbiddenException, Injectable, ServiceUnavailableException } from "@nestjs/common";
-import { PrismaService } from "../prisma/prisma.service";
-import { User } from "@prisma/client";
-import { JwtService } from "@nestjs/jwt";
-import * as bcrypt from 'bcrypt'
-import { Response } from "express";
-import { CreateUserDto } from "./dto/create-user.dto";
-import axios from "axios";
+import {
+  BadRequestException,
+  ForbiddenException,
+  Injectable,
+  ServiceUnavailableException,
+} from '@nestjs/common';
+import { PrismaService } from '../prisma/prisma.service';
+import { User } from '@prisma/client';
+import { JwtService } from '@nestjs/jwt';
+import * as bcrypt from 'bcrypt';
+import { Response } from 'express';
+import { CreateUserDto } from './dto/create-user.dto';
+import axios from 'axios';
 import { AddMinutesToDate } from '../common/helpers/addMinutes';
-import { dates, decode, encode } from '../common/helpers/crypto'
+import { dates, decode, encode } from '../common/helpers/crypto';
 import { VerifyOtpDto } from './dto/verify-otp.dto';
-import { Otp } from "@prisma/client";
-import { PhoneUserDto } from "./dto/phone-user.dto";
+import { Otp } from '@prisma/client';
+import { PhoneUserDto } from './dto/phone-user.dto';
 import { v4 } from 'uuid';
 import * as otpGenerator from 'otp-generator';
-import { LoginUserDto } from "./dto/login-user.dto";
-import { UpdateUserDto } from "./dto/update-user.dto";
-import passport from "passport";
+import { LoginUserDto } from './dto/login-user.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
+import passport from 'passport';
 
 @Injectable()
 export class UsersService {
   constructor(
     private readonly prismaService: PrismaService,
-    private readonly jwtService: JwtService
-  ) { }
+    private readonly jwtService: JwtService,
+  ) {}
 
   /*********************************getToken********************************************/
   async getTokens(user: User) {
@@ -61,75 +66,71 @@ export class UsersService {
   }
 
   /****************************************signUp**********************************************/
-  async signUp(
-    createUserDto: CreateUserDto,
-    res: Response
-  ) {
+  async signUp(createUserDto: CreateUserDto, res: Response) {
     const user = await this.prismaService.user.findUnique({
       where: {
         phone: createUserDto.phone,
-      }
-    })
+      },
+    });
     if (user) {
-      throw new BadRequestException("User already exists !")
+      throw new BadRequestException('User already exists !');
     }
-if(createUserDto.password != createUserDto.confirm_password){
-  throw new BadRequestException("Password not match!")
-}
-    const hashed_password = await bcrypt.hash(createUserDto.password, 7)
+    if (createUserDto.password != createUserDto.confirm_password) {
+      throw new BadRequestException('Password not match!');
+    }
+    const hashed_password = await bcrypt.hash(createUserDto.password, 7);
     const newUser = await this.prismaService.user.create({
       data: {
         phone: createUserDto.phone,
         hashed_password: hashed_password,
-        name:createUserDto.name,
-        hashed_token: "1"
-      }
-    })
+        name: createUserDto.name,
+        hashed_token: '1',
+      },
+    });
 
-    const tokens = await this.getTokens(newUser)
-    await this.updateRefreshToken(newUser, tokens.refresh_token)
+    const tokens = await this.getTokens(newUser);
+    await this.updateRefreshToken(newUser, tokens.refresh_token);
     res.cookie('refresh_token', tokens.refresh_token, {
       maxAge: Number(process.env.COOKIE_TIME),
-      httpOnly: true
-    })
-    return tokens
+      httpOnly: true,
+    });
+    return tokens;
   }
 
   /************************************************signIn********************************************************* */
 
   async signIn(loginUserDto: LoginUserDto, res: Response) {
-
-    const { password, phone } = loginUserDto
+    const { password, phone } = loginUserDto;
 
     const newUser = await this.prismaService.user.findUnique({
-      where: { phone }
-    })
+      where: { phone },
+    });
     if (!newUser) {
       throw new BadRequestException('User not found');
     }
 
     const passwordIsMatch = await bcrypt.compare(
       password,
-      newUser.hashed_password
+      newUser.hashed_password,
     );
 
     if (!passwordIsMatch) {
       throw new BadRequestException('Password do not match');
     }
 
-    const tokens = await this.getTokens(newUser)
+    const tokens = await this.getTokens(newUser);
 
-    const updateUser = await this.updateRefreshToken(newUser, tokens.refresh_token)
+    const updateUser = await this.updateRefreshToken(
+      newUser,
+      tokens.refresh_token,
+    );
 
-    res.cookie("refresh_token", tokens.refresh_token,
-      {
-        maxAge: Number(process.env.COOKIE_TIME),
-        httpOnly: true,
-      })
+    res.cookie('refresh_token', tokens.refresh_token, {
+      maxAge: Number(process.env.COOKIE_TIME),
+      httpOnly: true,
+    });
 
-    return tokens
-
-
+    return tokens;
   }
   /***************************************************logout******************************************************* */
 
@@ -138,44 +139,42 @@ if(createUserDto.password != createUserDto.confirm_password){
       where: {
         id: userId,
         hashed_token: {
-          not: null
+          not: null,
         },
       },
       data: {
-        hashed_token: null
-      }
-    })
+        hashed_token: null,
+      },
+    });
     if (!user) {
       throw new ForbiddenException('Access Denied');
     }
 
     res.clearCookie('refresh_token');
 
-    return true
+    return true;
   }
   /****************************************refreshToken*********************************************** */
 
   async refreshToken(userId: number, refreshToken: string, res: Response) {
     const user = await this.prismaService.user.findUnique({
       where: {
-        id: userId
-      }
-    })
+        id: userId,
+      },
+    });
 
     if (!user || !user.hashed_token) {
       throw new BadRequestException('server not found');
     }
 
-
-    const newUser = await this.prismaService.user.findUnique({ where: { id: userId } });
+    const newUser = await this.prismaService.user.findUnique({
+      where: { id: userId },
+    });
 
     if (!newUser || !newUser.hashed_token) {
       throw new BadRequestException('User not found');
     }
-    const tokenMatch = await bcrypt.compare(
-      refreshToken,
-      newUser.hashed_token
-    );
+    const tokenMatch = await bcrypt.compare(refreshToken, newUser.hashed_token);
 
     if (!tokenMatch) {
       throw new ForbiddenException('Forbidden');
@@ -184,22 +183,21 @@ if(createUserDto.password != createUserDto.confirm_password){
     const tokens = await this.getTokens(newUser);
     await bcrypt.hash(tokens.refresh_token, 7);
 
-    const checkUser = await this.prismaService.user.findUnique({ where: { id: newUser.id } })
+    const checkUser = await this.prismaService.user.findUnique({
+      where: { id: newUser.id },
+    });
     if (!checkUser) {
       throw new BadRequestException('user not Found');
     }
 
-    await this.updateRefreshToken(newUser, tokens.refresh_token)
+    await this.updateRefreshToken(newUser, tokens.refresh_token);
 
-    res.cookie("refresh_token", tokens.refresh_token,
-      {
-        maxAge: Number(process.env.COOKIE_TIME),
-        httpOnly: true,
-      })
-
+    res.cookie('refresh_token', tokens.refresh_token, {
+      maxAge: Number(process.env.COOKIE_TIME),
+      httpOnly: true,
+    });
 
     return tokens;
-
   }
 
   /*******************************NewOtp*******************************/
@@ -216,24 +214,24 @@ if(createUserDto.password != createUserDto.confirm_password){
 
     if (!existingUser) {
       const resp = await axios.post(
-        "https://notify.eskiz.uz/api/message/sms/send",
+        'https://notify.eskiz.uz/api/message/sms/send',
         {
           mobile_phone: phone,
-          message: "Bu Eskiz dan test",
-          from: "4546",
-          callback_url: "http://0000.uz/test.php",
+          message: 'Bu Eskiz dan test',
+          from: '4546',
+          callback_url: 'http://0000.uz/test.php',
         },
         {
           headers: {
             Authorization: `Bearer ${process.env.SMS_TOKEN}`,
           },
-        }
+        },
       );
       if (resp.status !== 200) {
-        throw new ServiceUnavailableException("Otp yuborishda xatolik");
+        throw new ServiceUnavailableException('Otp yuborishda xatolik');
       }
       // const otp = "Bu Eskiz dan test";
-      const message = "Bu Eskiz dan test" + phone.slice(phone.length - 4);
+      const message = 'Bu Eskiz dan test' + phone.slice(phone.length - 4);
       const now = new Date();
       const expiration_time = AddMinutesToDate(now, 5);
       const newOtp = await this.prismaService.otp.create({
@@ -241,8 +239,7 @@ if(createUserDto.password != createUserDto.confirm_password){
           otp,
           expiration_time,
           check: phone,
-          verified: false
-
+          verified: false,
         },
       });
 
@@ -253,9 +250,9 @@ if(createUserDto.password != createUserDto.confirm_password){
       };
 
       const encoded = encode(JSON.stringify(details));
-      return { status: "Success", details: encoded, message };
+      return { status: 'Success', details: encoded, message };
     } else {
-      throw new BadRequestException("User already exists");
+      throw new BadRequestException('User already exists');
     }
   }
   /*****************************************verifyOtp********************************************* */
@@ -266,7 +263,7 @@ if(createUserDto.password != createUserDto.confirm_password){
     const details = JSON.parse(decoded);
 
     if (details.check !== check) {
-      throw new BadRequestException("OTP bu raqamga yuborilmagan");
+      throw new BadRequestException('OTP bu raqamga yuborilmagan');
     }
 
     const resultOtp = await this.prismaService.otp.findUnique({
@@ -277,18 +274,16 @@ if(createUserDto.password != createUserDto.confirm_password){
       throw new BadRequestException("Bunday Otp yo'q");
     }
 
-
     if (resultOtp.verified) {
-      throw new BadRequestException("Bu otp allaqachon tekshirilgan");
+      throw new BadRequestException('Bu otp allaqachon tekshirilgan');
     }
 
-
     if (currentDate > resultOtp.expiration_time) {
-      throw new BadRequestException("Bu otpning vaqti tugagan");
+      throw new BadRequestException('Bu otpning vaqti tugagan');
     }
 
     if (otp !== resultOtp.otp) {
-      throw new BadRequestException("Otp mos emas");
+      throw new BadRequestException('Otp mos emas');
     }
 
     const user = await this.prismaService.user.update({
@@ -297,7 +292,7 @@ if(createUserDto.password != createUserDto.confirm_password){
     });
 
     if (!user) {
-      throw new BadRequestException('Bunday user yo\'q');
+      throw new BadRequestException("Bunday user yo'q");
     }
 
     await this.prismaService.otp.update({
@@ -306,31 +301,35 @@ if(createUserDto.password != createUserDto.confirm_password){
     });
 
     const response = {
-      message: "OTP successfully verified",
+      message: 'OTP successfully verified',
       user: user,
     };
 
     return response;
   }
 
-/******************************************updateUser******************************** */
-  async updateUser(id:number,updateUserDto:UpdateUserDto){
-    const newUser = await this.prismaService.user.findUnique({where:{id}})
-if (!newUser) {
-  throw new BadRequestException('User not found')
-}
-const matchPassword = await bcrypt.compare(updateUserDto.password,newUser.hashed_password)
-if(!matchPassword){
-  throw new BadRequestException('Password not match')
-}
-const hashed_password = await bcrypt.hash(updateUserDto.password,7)
-const updateUser = await this.prismaService.user.update({where:{id},data:{
-  hashed_password,...updateUserDto}
-}
-  )
-  
-    return updateUser
+  /******************************************updateUser******************************** */
+  async updateUser(id: number, updateUserDto: UpdateUserDto) {
+    const newUser = await this.prismaService.user.findUnique({ where: { id } });
+    if (!newUser) {
+      throw new BadRequestException('User not found');
+    }
+    const matchPassword = await bcrypt.compare(
+      updateUserDto.password,
+      newUser.hashed_password,
+    );
+    if (!matchPassword) {
+      throw new BadRequestException('Password not match');
+    }
+    const hashed_password = await bcrypt.hash(updateUserDto.password, 7);
+    const updateUser = await this.prismaService.user.update({
+      where: { id },
+      data: {
+        hashed_password,
+        ...updateUserDto,
+      },
+    });
+
+    return updateUser;
   }
-
 }
-

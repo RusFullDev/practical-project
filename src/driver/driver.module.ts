@@ -1,12 +1,14 @@
 import { Module } from '@nestjs/common';
-import { DriverService } from './driver.service';
+import { AuthService } from './driver.service';
 import { DriverController } from './driver.controller';
 import { PrismaModule } from 'src/prisma/prisma.module';
+import { PrismaService } from '../prisma/prisma.service';
+import { JwtModule } from '@nestjs/jwt';
 
 @Module({
-  imports: [PrismaModule],
+  imports: [PrismaModule, JwtModule.register({})],
   controllers: [DriverController],
-  providers: [DriverService],
-  exports: [DriverService],
+  providers: [AuthService, PrismaService],
+  exports: [AuthService],
 })
 export class DriverModule {}

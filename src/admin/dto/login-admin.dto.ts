@@ -1,21 +1,20 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { IsNotEmpty, IsString } from 'class-validator';
 
-export class UpdateAdminDto {
-  @ApiProperty({
-    description: 'The name of the admin',
-    example: 'John Doe',
-  })
-  readonly name?: string;
-
+export class LoginAdminAuthDto {
   @ApiProperty({
     description: 'The phone number of the admin',
     example: '+1234567890',
   })
-  readonly phone?: string;
+  @IsNotEmpty()
+  @IsString()
+  phone: string;
 
   @ApiProperty({
     description: 'The password for the admin account',
     example: 'securepassword123',
   })
-  readonly password?: string;
+  @IsNotEmpty()
+  @IsString()
+  password: string;
 }
