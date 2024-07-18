@@ -13,10 +13,9 @@ import { TranslateModule } from './translate/translate.module';
 import { LanguageModule } from './language/language.module';
 import {ServeStaticModule} from '@nestjs/serve-static';
 import { join } from 'path';
-import { FilesModule } from './file/file.module';
+import { CloudinaryModule } from './cloudinary/cloudinary.module';
 import { AdminModule } from './admin/admin.module';
 import { DriverCarModule } from './driver_car/driver_car.module';
-
 @Module({
   imports: [ 
     ServeStaticModule.forRoot({
@@ -34,7 +33,7 @@ import { DriverCarModule } from './driver_car/driver_car.module';
     RegionModule,
     TranslateModule,
     LanguageModule,
-    FilesModule,
+    CloudinaryModule,
     DriverCarModule,
     AdminModule
   ],
