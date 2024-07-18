@@ -15,5 +15,5 @@ export class UpdateUserDto {
   @ApiProperty({ required: false, description: 'The password of the user' })
   @IsOptional()
   @IsString()
-  password?: string;
+  hashed_password?: string;
 }

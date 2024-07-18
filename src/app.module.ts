@@ -14,10 +14,8 @@ import { LanguageModule } from './language/language.module';
 import {ServeStaticModule} from '@nestjs/serve-static';
 import { join } from 'path';
 import { CloudinaryModule } from './cloudinary/cloudinary.module';
-
-
-
-
+import { AdminModule } from './admin/admin.module';
+import { DriverCarModule } from './driver_car/driver_car.module';
 @Module({
   imports: [ 
     ServeStaticModule.forRoot({
@@ -35,7 +33,9 @@ import { CloudinaryModule } from './cloudinary/cloudinary.module';
     RegionModule,
     TranslateModule,
     LanguageModule,
-    CloudinaryModule
+    CloudinaryModule,
+    DriverCarModule,
+    AdminModule
   ],
   controllers: [],
   providers:[],
