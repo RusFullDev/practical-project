@@ -65,5 +65,7 @@ export class UpdateDriverDto {
   @IsOptional()
   @IsString()
   @MinLength(8) // Example validation rule: Minimum password length
-  hashed_password?: string;
+  password: string;
+
+
 }

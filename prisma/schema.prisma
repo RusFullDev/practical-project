@@ -127,7 +127,7 @@ model Driver {
   address         String
   photo           String
   driver_license  String
-  is_active       Boolean? // Optional
+  is_active       Boolean?     @default(false)
   hashed_token    String? // Optional
   hashed_password String? // Optional
   total_balance   Decimal      @default(0)

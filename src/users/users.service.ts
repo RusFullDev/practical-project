@@ -3,6 +3,7 @@ import {
   ForbiddenException,
   Injectable,
   ServiceUnavailableException,
+
 } from "@nestjs/common";
 import { PrismaService } from "../prisma/prisma.service";
 import { User } from "@prisma/client";
@@ -25,6 +26,7 @@ import { UpdateUserDto } from "./dto/update-user.dto";
 export class UsersService {
   constructor(
     private readonly prismaService: PrismaService,
+
     private readonly jwtService: JwtService
   ) {}
 
@@ -80,6 +82,7 @@ export class UsersService {
       },
     });
     if (user) {
+
       throw new BadRequestException("User already exists !");
     }
     if (createUserDto.password != createUserDto.confirm_password) {
@@ -91,17 +94,20 @@ export class UsersService {
         phone: createUserDto.phone,
         hashed_password: hashed_password,
         name: createUserDto.name,
+
         hashed_token: "1",
       },
     });
 
     const tokens = await this.getTokens(newUser);
     await this.updateRefreshToken(newUser, tokens.refresh_token);
+
     res.cookie("refresh_token", tokens.refresh_token, {
       maxAge: Number(process.env.COOKIE_TIME),
       httpOnly: true,
     });
     return tokens;
+
     try {
     } catch (error) {
       console.log(error);
@@ -122,7 +128,7 @@ export class UsersService {
 
     const passwordIsMatch = await bcrypt.compare(
       password,
-      newUser.hashed_password
+      newUser.hashed_password,
     );
 
     if (!passwordIsMatch) {
@@ -133,6 +139,7 @@ export class UsersService {
 
     const updateUser = await this.updateRefreshToken(
       newUser,
+
       tokens.refresh_token
     );
 
@@ -154,6 +161,7 @@ export class UsersService {
     }
     const updateUser = await this.prismaService.user.update({
       where: {
+
         id: userData.id,
       },
       data: {
@@ -163,6 +171,7 @@ export class UsersService {
     res.clearCookie("refresh_token");
     return true;
   }
+
 
   /****************************************refreshToken*********************************************** */
 
@@ -183,6 +192,7 @@ export class UsersService {
     }
 
     const tokens = await this.getTokens(newUser);
+
     const hashed_refresh_token = await bcrypt.hash(tokens.refresh_token, 7);
     const updatedUser = await this.prismaService.user.update({
       where: { id: newUser.id },
@@ -251,6 +261,7 @@ export class UsersService {
         const encoded = await encode(JSON.stringify(details));
         console.log(encoded);
 
+
         return { status: "Success", details: encoded };
       } else {
         throw new BadRequestException("User already exists");
@@ -267,6 +278,7 @@ export class UsersService {
       const decoded = await decode(verification_key);
       // console.log(decoded);
 
+
       const details = JSON.parse(decoded);
       // console.log(details);
 
@@ -277,6 +289,7 @@ export class UsersService {
       const resultOtp = await this.prismaService.otp.findUnique({
         where: { id: details.otp_id },
       });
+
 
       if (!resultOtp) {
         throw new BadRequestException("Bunday Otp yo'q");
@@ -307,6 +320,7 @@ export class UsersService {
       if (!user) {
         throw new BadRequestException("Bunday user yo'q");
       }
+
 
       const response = {
         message: "OTP successfully verified",
@@ -384,6 +398,7 @@ export class UsersService {
         },
       });
 
+
       return updatedUser;
     } catch (error) {
       console.error('Error updating user:', error);
@@ -411,6 +426,7 @@ async findAll() {
       throw new Error(`Error finding user with ID ${id}: ${error.message}`);
     }
   }
+
 
   /************************************************Delete************************************ */
  async remove(id: number) {
