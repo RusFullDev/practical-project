@@ -1,9 +1,12 @@
-import { IsNumber } from "class-validator";
+import { IsNumber } from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger';
 
 export class UpdateDriverCarDto {
-    @IsNumber()
-    readonly driverId?: number;
-    @IsNumber()
-    readonly carId?: number;
-}
+  @ApiProperty({ example: 1, description: 'The ID of the driver', required: false })
+  @IsNumber()
+  readonly driverId?: number;
 
+  @ApiProperty({ example: 1, description: 'The ID of the car', required: false })
+  @IsNumber()
+  readonly carId?: number;
+}
