@@ -17,12 +17,15 @@ import * as otpGenerator from 'otp-generator';
 import { AddMinutesToDate } from '../common/helpers/addMinutes';
 import { decode, encode } from '../common/helpers/crypto';
 import axios from 'axios';
+import { CloudinaryService } from '../cloudinary/cloudinary.service';
+import { UpdateDriverImage } from './dto/updateImage.dto';
 
 @Injectable()
 export class AuthService {
   constructor(
     private readonly prismaService: PrismaService,
     private readonly jwtService: JwtService,
+    private readonly fileService: CloudinaryService,
   ) {}
 
   // async getTokens(user: Driver) {
@@ -151,14 +154,21 @@ export class AuthService {
 
     const hashed_password = await bcrypt.hash(createDriverDto.password, 7);
 
+    const photo = await (
+      await this.fileService.uploadImage(createDriverDto.photo[0])
+    ).url;
+    const driver_license = await (
+      await this.fileService.uploadImage(createDriverDto.driver_license[0])
+    ).url;
+
     const newDriver = await this.prismaService.driver.create({
       data: {
         first_name: createDriverDto.first_name,
         last_name: createDriverDto.last_name,
         phone: createDriverDto.phone,
         address: createDriverDto.address,
-        photo: createDriverDto.photo,
-        driver_license: createDriverDto.driver_license,
+        photo: photo,
+        driver_license: driver_license,
         total_balance: 0,
         hashed_password,
       },
@@ -404,5 +414,34 @@ export class AuthService {
     });
 
     return updateUser;
+  }
+
+  async updateDriverPhoto(id: number, updateDriverImage: UpdateDriverImage) {
+    const newUser = await this.prismaService.driver.findUnique({
+      where: { id },
+    });
+    if (!newUser) {
+      throw new BadRequestException('Driver not found');
+    }
+
+    if (updateDriverImage.driver_license) {
+      const driver_license = await (
+        await this.fileService.uploadImage(updateDriverImage.driver_license)
+      ).url;
+      await this.prismaService.driver.update({
+        where: { id: id },
+        data: { driver_license: driver_license },
+      });
+    }
+
+    if (updateDriverImage.photo) {
+      const photo = await (
+        await this.fileService.uploadImage(updateDriverImage.photo)
+      ).url;
+      await this.prismaService.driver.update({
+        where: { id: id },
+        data: { photo: photo },
+      });
+    }
   }
 }

@@ -6,17 +6,30 @@ import {
   Patch,
   Param,
   Delete,
+  UseInterceptors,
+  UploadedFile,
+  UploadedFiles,
 } from '@nestjs/common';
 import { CarService } from './car.service';
 import { CreateCarDto } from './dto/create-car.dto';
 import { UpdateCarDto } from './dto/update-car.dto';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiConsumes,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
+import { FileFieldsInterceptor, FileInterceptor } from '@nestjs/platform-express';
 
 @ApiTags('car')
 @Controller('car')
 export class CarController {
   constructor(private readonly carService: CarService) {}
 
+  @ApiConsumes('multipart/form-data')
+  @UseInterceptors(
+    FileFieldsInterceptor([{ name: 'photo' }, { name: 'text_passport' }]),
+  )
   @Post()
   @ApiOperation({ summary: 'Create a new car' })
   @ApiResponse({
@@ -24,8 +37,10 @@ export class CarController {
     description: 'The car has been successfully created.',
   })
   @ApiResponse({ status: 400, description: 'Bad Request.' })
-  create(@Body() createCarDto: CreateCarDto) {
-    return this.carService.create(createCarDto);
+  create(
+    @Body() createCarDto: CreateCarDto,
+    @UploadedFiles() files: { photo: any; text_passport: any },) {
+    return this.carService.create({...createCarDto, ...files});
   }
 
   @Get()

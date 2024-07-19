@@ -21,12 +21,13 @@ import { v4 } from "uuid";
 import * as otpGenerator from "otp-generator";
 import { LoginUserDto } from "./dto/login-user.dto";
 import { UpdateUserDto } from "./dto/update-user.dto";
+import { CloudinaryService } from "../cloudinary/cloudinary.service";
 
 @Injectable()
 export class UsersService {
   constructor(
     private readonly prismaService: PrismaService,
-
+    private readonly fileService: CloudinaryService,
     private readonly jwtService: JwtService
   ) {}
 
@@ -94,7 +95,6 @@ export class UsersService {
         phone: createUserDto.phone,
         hashed_password: hashed_password,
         name: createUserDto.name,
-
         hashed_token: "1",
       },
     });
@@ -440,7 +440,4 @@ async findAll() {
       throw new Error(`Error deleting user with ID ${id}: ${error.message}`);
     }
   }
-
-
-
 }
