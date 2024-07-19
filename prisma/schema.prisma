@@ -36,40 +36,37 @@ enum TranslateType {
 }
 
 model Language {
-  id         String       @default(dbgenerated("GEN_RANDOM_UUID()")) @map("id") @db.Uuid
+  id         Int          @id @default(autoincrement())
   code       String       @map("code") @db.VarChar(2)
   title      String       @map("title") @db.VarChar(64)
   image_url  String       @map("image_url") @db.VarChar()
   definition Definition[]
 
-  @@id([id])
   @@unique([code])
   @@map("language")
 }
 
 model Translate {
-  id         String        @default(dbgenerated("GEN_RANDOM_UUID()")) @map("id") @db.Uuid
+  id         Int           @id @default(autoincrement())
   code       String        @map("code") @db.VarChar()
   type       TranslateType @map("type")
   createdAt  DateTime      @default(now()) @map("created_at")
   status     Status        @default(active) @map("status")
   definition Definition[]
 
-  @@id([id])
   @@unique([code])
   @@map("translate")
 }
 
 model Definition {
-  id          String @default(dbgenerated("GEN_RANDOM_UUID()")) @map("id") @db.Uuid
-  translateId String @map("translate_id") @db.Uuid
-  languageId  String @map("language_id") @db.Uuid
+  id          Int    @id @default(autoincrement())
+  translateId Int    @map("translate_id")
+  languageId  Int    @map("language_id")
   value       String @map("value") @db.VarChar()
 
   translate Translate @relation(fields: [translateId], references: [id], onDelete: Cascade, onUpdate: NoAction)
   language  Language  @relation(fields: [languageId], references: [id], onDelete: Cascade, onUpdate: NoAction)
 
-  @@id([id])
   @@map("definition")
 }
 
@@ -90,13 +87,13 @@ model User {
 }
 
 model OrderTaxi {
-  id            Int     @id @default(autoincrement())
+  id            Int      @id @default(autoincrement())
   to_district   String
   from_district String
   date          DateTime
   location      String?
   description   String
-  User          User?   @relation(fields: [userId], references: [id])
+  User          User?    @relation(fields: [userId], references: [id])
   userId        Int?
   distance      String
   duration      String
