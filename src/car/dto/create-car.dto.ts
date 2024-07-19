@@ -14,13 +14,19 @@ export class CreateCarDto {
   @IsString()
   number: string;
 
-  @ApiProperty({ example: '/img.png' })
-  @IsString()
-  photo: string;
+  @ApiProperty({
+    type: 'string',
+    format: 'binary',
+    required:true
+  })
+  photo: any;
 
-  @ApiProperty({ example: 'tex passport' })
-  @IsString()
-  text_passport: string;
+  @ApiProperty({
+    type: 'string',
+    format: 'binary',
+    required:true
+  })
+  text_passport: any;
 
   @ApiProperty({ example: 'yuk sigimi,10kg' })
   @IsString()

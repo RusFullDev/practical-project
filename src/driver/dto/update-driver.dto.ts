@@ -43,22 +43,6 @@ export class UpdateDriverDto {
   address?: string;
 
   @ApiPropertyOptional({
-    example: 'photo.png',
-    description: 'The photo of the driver',
-  })
-  @IsOptional()
-  @IsString()
-  photo?: string;
-
-  @ApiPropertyOptional({
-    example: 'DL123456789',
-    description: 'The driver license number',
-  })
-  @IsOptional()
-  @IsString()
-  driver_license?: string;
-
-  @ApiPropertyOptional({
     example: 'newpassword',
     description: 'The new password of the driver',
   })
@@ -66,6 +50,4 @@ export class UpdateDriverDto {
   @IsString()
   @MinLength(8) // Example validation rule: Minimum password length
   password: string;
-
-
 }
