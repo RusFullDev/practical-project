@@ -409,7 +409,7 @@ export class UsersService {
 /*****************************findAll********************************************************/
 async findAll() {
     try {
-      return await this.prismaService.user.findMany();
+      return await this.prismaService.user.findMany({include:{OrderTaxi:true}});
     } catch (error) {
       throw new Error(`Error finding users: ${error.message}`);
     }

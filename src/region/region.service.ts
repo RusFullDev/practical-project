@@ -12,36 +12,54 @@ import { CreateRegionRequest, UpdateRegionRequest } from './interfaces';
 @Injectable()
 export class RegionService {
   #_prisma: PrismaService;
-  #_service: TranslateService
-  
+  #_service: TranslateService;
+
   constructor(prisma: PrismaService, service: TranslateService) {
-      this.#_prisma = prisma;
-      this.#_service = service
+    this.#_prisma = prisma;
+    this.#_service = service;
   }
 
   async createRegion(payload: CreateRegionRequest): Promise<void> {
     await this.#_checkExistingRegion(payload.name);
-    await this.#_checkTranslate(payload.name)
+    await this.#_checkTranslate(payload.name);
 
     await this.#_prisma.region.create({
       data: {
-        name: payload.name
+        name: payload.name,
       },
     });
   }
 
-  async getRegionList(languageCode:string): Promise<Region[]> {
-    const data =  await this.#_prisma.region.findMany();
-    const result = []
+  async getRegionList(languageCode: string): Promise<Region[]> {
+    const data = await this.#_prisma.region.findMany({
+      include: { district: true },
+    });
+    const result = [];
+    const districts = [];
     for (const x of data) {
-        const name_request = {
-          translateId: x.name,
+      const name_request = {
+        translateId: x.name,
+        languageCode: languageCode,
+      };
+      const translated_title =
+        await this.#_service.getSingleTranslate(name_request);
+      for (const district of x.district) {
+        const district_name_request = {
+          translateId: district.name,
           languageCode: languageCode,
         };
-        const translated_title = await this.#_service.getSingleTranslate(name_request);
-        result.push({id: x.id, name: translated_title.value})
+        const translated_name = await this.#_service.getSingleTranslate(
+          district_name_request,
+        );
+        districts.push({ id: district.id, name: translated_name.value });
+      }
+      result.push({
+        id: x.id,
+        name: translated_title.value,
+        districts: districts,
+      });
     }
-    return result
+    return result;
   }
 
   async updateRegion(payload: UpdateRegionRequest): Promise<void> {
@@ -58,10 +76,10 @@ export class RegionService {
     //     file: payload.image,
     //     bucket: 'demo',
     //   });
-      // await this.#_prisma.language.update({
-      //   where: { id: payload.id },
-      //   data: { image_url: file.fileName },
-      // });
+    // await this.#_prisma.language.update({
+    //   where: { id: payload.id },
+    //   data: { image_url: file.fileName },
+    // });
     // }
 
     if (payload.name) {
@@ -111,8 +129,9 @@ export class RegionService {
 
   async #_checkTranslate(id: number): Promise<void> {
     const translate = await this.#_prisma.translate.findFirst({
-      where: { id },
+      where: { id: id },
     });
+    console.log(id);
 
     if (!translate) throw new NotFoundException('Translate not found');
   }

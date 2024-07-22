@@ -81,12 +81,13 @@ export class OrderTruckService {
   }
 
   findAll() {
-    return this.prismaService.orderTruck.findMany();
+    return this.prismaService.orderTruck.findMany({include:{User:true}});
   }
 
   findOne(id: number) {
     return this.prismaService.orderTruck.findUnique({
       where: { id },
+      include:{User:true},
     });
   }
 

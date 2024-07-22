@@ -80,7 +80,7 @@ export class OrderTaxiService {
   }
 
   findAll() {
-    return this.prismaService.orderTaxi.findMany();
+    return this.prismaService.orderTaxi.findMany({include:{User:true}});
   }
 
   findOne(id: number) {

@@ -97,6 +97,7 @@ model OrderTaxi {
   userId        Int?
   distance      String
   duration      String
+
 }
 
 model OrderTruck {
