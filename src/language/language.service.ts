@@ -44,7 +44,7 @@ export class LanguageService {
     }
   }
 
-  async deleteLanguage(id: string): Promise<void> {
+  async deleteLanguage(id: number): Promise<void> {
     await this.#_checkLanguage(id);
     const deletedImage = await this.#_prisma.language.findFirst({
       where: { id: id },
@@ -65,7 +65,7 @@ export class LanguageService {
     }
   }
 
-  async #_checkLanguage(id: string): Promise<void> {
+  async #_checkLanguage(id: number): Promise<void> {
     const language = await this.#_prisma.language.findFirst({
       where: {
         id,

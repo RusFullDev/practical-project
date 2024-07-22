@@ -1,4 +1,4 @@
 export declare interface CreateDistrictRequest {
-    name: string;
+    name: number;
     region_id: number
 }

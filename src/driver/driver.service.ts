@@ -2,6 +2,7 @@ import {
   BadRequestException,
   ForbiddenException,
   Injectable,
+  NotFoundException,
   ServiceUnavailableException,
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
@@ -442,6 +443,31 @@ export class AuthService {
         where: { id: id },
         data: { photo: photo },
       });
+    }
+  }
+
+  async findAll() {
+    try {
+      return await this.prismaService.driver.findMany({});
+    } catch (error) {
+      throw new Error(`Error finding driver: ${error.message}`);
+    }
+  }
+  async remove(id: number) {
+    const existingBalance = await this.prismaService.driver.findUnique({
+      where: { id },
+    });
+
+    if (!existingBalance) {
+      throw new NotFoundException(`driver with ID ${id} not found`);
+    }
+
+    try {
+      return await this.prismaService.driver.delete({
+        where: { id },
+      });
+    } catch (error) {
+      throw new Error(`Error deleting driver with ID ${id}: ${error.message}`);
     }
   }
 }

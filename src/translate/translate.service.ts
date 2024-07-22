@@ -80,7 +80,7 @@ export class TranslateService {
     });
   }
 
-  async createTranslate(payload: CreateTranslateInterface): Promise<string> {
+  async createTranslate(payload: CreateTranslateInterface): Promise<number> {
     await this.#_checkExistingTranslate(payload.code);
 
     for (const code of Object.keys(payload.definition)) {
@@ -145,7 +145,7 @@ export class TranslateService {
   async updateTranslate(payload: UpdateTranslateRequest): Promise<void> {
     await this.#_checkTranslate(payload.id);
     const foundedTranslate = await this.#_prisma.translate.findFirst({
-      where: { id: payload.id },
+      where: { id: payload.id},
     });
 
     if (payload?.definition) {
@@ -169,7 +169,7 @@ export class TranslateService {
     }
   }
 
-  async deleteTranslate(id: string) {
+  async deleteTranslate(id: number) {
     await this.#_prisma.translate.update({
       where: { id: id },
       data: {
@@ -186,7 +186,7 @@ export class TranslateService {
     if (!language) throw new ConflictException(`Language ${code} not found`);
   }
 
-  async #_checkTranslate(id: string): Promise<void> {
+  async #_checkTranslate(id: number): Promise<void> {
     const translate = await this.#_prisma.translate.findFirst({
       where: { id },
     });

@@ -8,6 +8,5 @@ export class UpdateLanguageDto implements Omit<UpdateRegionRequest, 'id'> {
     required: false
   })
   @IsOptional()
-  @IsString()
-  name: string;
+  name: number;
 }

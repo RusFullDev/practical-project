@@ -4,13 +4,11 @@ import { CreateDistrictRequest } from "../interfaces";
 
 export class CreateDistrictDto implements CreateDistrictRequest {
   @ApiProperty({
-    example: 'Tashkent',
-    type: String,
+    example: 1,
     required: true,
   })
   @IsNotEmpty()
-  @IsString()
-  name: string;
+  name: number;
 
   @ApiProperty({
     example: 2,

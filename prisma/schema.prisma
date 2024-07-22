@@ -163,13 +163,13 @@ model Driver_car {
 
 model Region {
   id       Int        @id @default(autoincrement())
-  name     String
+  name     Int
   district District[]
 }
 
 model District {
   id        Int    @id @default(autoincrement())
-  name      String
+  name      Int
   region_id Int    @map("region_id")
   region    Region @relation(fields: [region_id], references: [id])
 }

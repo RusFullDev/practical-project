@@ -47,14 +47,14 @@ export class LanguageController {
   @UseInterceptors(FileInterceptor('image'))
   async updateLanguage(
     @Body() payload: UpdateLanguageDto,
-    @Param('id') id: string,
+    @Param('id') id: number,
     @UploadedFile() image: any,
   ): Promise<void> {
     await this.#_service.updateLanguage({ id, ...payload, image });
   }
 
   @Delete('delete/:id')
-  async deleteLanguage(@Param('id') id: string): Promise<void> {
+  async deleteLanguage(@Param('id') id: number): Promise<void> {
     await this.#_service.deleteLanguage(id);
   }
 }

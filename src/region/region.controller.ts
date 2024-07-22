@@ -41,7 +41,7 @@ export class RegionController {
   @Patch('edit/:id')
   async updateLanguage(
     @Body() payload: UpdateRegionRequest,
-    @Param('id') id: string,
+    @Param('id') id: number,
   ): Promise<void> {
     await this.#_service.updateRegion({ id, ...payload });
   }

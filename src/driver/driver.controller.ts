@@ -10,6 +10,8 @@ import {
   UseInterceptors,
   UploadedFile,
   UploadedFiles,
+  Delete,
+  Get,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -17,6 +19,7 @@ import {
   ApiBody,
   ApiResponse,
   ApiConsumes,
+  ApiParam,
 } from '@nestjs/swagger';
 import { Response } from 'express';
 import { CreateDriverDto } from './dto/create-driver.dto';
@@ -124,8 +127,24 @@ export class DriverController {
   updateDriverPhoto(
     @Param('id') id: string,
     @UploadedFiles() files: { photo: any; driver_lisence: any },
-    @Body() body:UpdateDriverImage
+    @Body() body: UpdateDriverImage,
   ) {
-    return this.authService.updateDriverPhoto(+id, {...files});
+    return this.authService.updateDriverPhoto(+id, { ...files });
+  }
+
+  @Delete(':id')
+  @ApiResponse({ status: 200, description: 'Deleted successfully' })
+  @ApiParam({ name: 'id', type: 'number' }) // Specify parameter type for Swagger
+  async remove(@Param('id') id: string) {
+    return this.authService.remove(+id);
+  }
+
+  @Get()
+  @ApiResponse({
+    status: 200,
+    description: 'Returns all drivers',
+  })
+  async findAll() {
+    return this.authService.findAll();
   }
 }

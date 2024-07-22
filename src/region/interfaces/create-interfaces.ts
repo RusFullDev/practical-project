@@ -1,3 +1,3 @@
 export declare interface CreateRegionRequest {
-    name: string;
+    name: number;
 }

@@ -1,5 +1,5 @@
 export declare interface UpdateLanguageRequest {
-    id: string;
+    id: number;
     title: string;
     image?:any;   
   }

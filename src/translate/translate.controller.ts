@@ -35,7 +35,7 @@ export class TranslateController {
 
   @Get('find/:id')
   async retrieveSingleTranslate(
-    @Param('id') translateId: string,
+    @Param('id') translateId: number,
     @Headers('accept-language') languageCode: string,
   ): Promise<GetSingleTranslateResponse> {
     return await this.#_service.getSingleTranslate({
@@ -59,20 +59,20 @@ export class TranslateController {
   }
 
   @Post('add')
-  async createTranslate(@Body() payload: CreateTranslateDto): Promise<string> {
+  async createTranslate(@Body() payload: CreateTranslateDto): Promise<number> {
     return await this.#_service.createTranslate(payload);
   }
 
   @Patch('edit/:id')
   async updateTranslate(
-    @Param('id') translateId: string,
+    @Param('id') translateId: number,
     @Body() payload: UpdateTranslateDto,
   ): Promise<void> {
     await this.#_service.updateTranslate({ ...payload, id: translateId });
   }
 
   @Delete('delete/:id')
-  async deleteTranslate(@Param('id') translateId: string): Promise<void> {
+  async deleteTranslate(@Param('id') translateId: number): Promise<void> {
     await this.#_service.deleteTranslate(translateId);
   }
 }

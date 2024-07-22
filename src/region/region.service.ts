@@ -35,7 +35,7 @@ export class RegionService {
     const result = []
     for (const x of data) {
         const name_request = {
-          translateId: x.name.toString(),
+          translateId: x.name,
           languageCode: languageCode,
         };
         const translated_title = await this.#_service.getSingleTranslate(name_request);
@@ -85,7 +85,7 @@ export class RegionService {
     await this.#_prisma.region.delete({ where: { id } });
   }
 
-  async #_checkExistingRegion(name: string): Promise<void> {
+  async #_checkExistingRegion(name: number): Promise<void> {
     const region = await this.#_prisma.region.findFirst({
       where: {
         name: name,
@@ -109,7 +109,7 @@ export class RegionService {
     }
   }
 
-  async #_checkTranslate(id: string): Promise<void> {
+  async #_checkTranslate(id: number): Promise<void> {
     const translate = await this.#_prisma.translate.findFirst({
       where: { id },
     });

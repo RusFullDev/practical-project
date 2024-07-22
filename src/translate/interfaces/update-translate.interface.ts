@@ -1,6 +1,6 @@
 import { Status } from "@prisma/client";
 
 export declare interface UpdateTranslateRequest {
-  id: string;
+  id: number;
   definition?: Record<string, string>
 }

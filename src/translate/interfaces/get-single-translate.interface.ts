@@ -1,6 +1,6 @@
 export declare interface GetSingleTranslateRequest{
     languageCode: string;
-    translateId: string
+    translateId: number
   }
   
   export declare interface GetSingleTranslateResponse{

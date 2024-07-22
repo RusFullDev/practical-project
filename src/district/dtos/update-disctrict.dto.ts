@@ -8,6 +8,5 @@ export class UpdateDistrictDto implements Omit<UpdateDistrictRequest, 'id'> {
     required: false
   })
   @IsOptional()
-  @IsString()
-  name: string;
+  name: number;
 }

@@ -36,7 +36,7 @@ import { CreateDistrictRequest, UpdateDistrictRequest } from './interfaces';
       const result = []
       for (const x of data) {
           const name_request = {
-            translateId: x.name.toString(),
+            translateId: x.name,
             languageCode: languageCode,
           };
           const translated_title = await this.#_service.getSingleTranslate(name_request);
@@ -93,7 +93,7 @@ import { CreateDistrictRequest, UpdateDistrictRequest } from './interfaces';
       }
     }
   
-    async #_checkTranslate(id: string): Promise<void> {
+    async #_checkTranslate(id: number): Promise<void> {
       const translate = await this.#_prisma.translate.findFirst({
         where: { id },
       });
