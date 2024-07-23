@@ -370,26 +370,14 @@ export class UsersService {
         throw new BadRequestException('User not found');
       }
 
-      if (updateUserDto.password) {
-        const matchPassword = await bcrypt.compare(
-          updateUserDto.password,
-          user.hashed_password,
-        );
-
-        if (!matchPassword) {
-          throw new BadRequestException('Password not match');
-        }
-
-        updateUserDto.password = await bcrypt.hash(
-          updateUserDto.password,
-          7,
-        );
-      }
+      let hashedPassword = await bcrypt.hash(updateUserDto.password, 7);
 
       const updatedUser = await this.prismaService.user.update({
         where: { id },
         data: {
-          ...updateUserDto,
+          name: updateUserDto.name,
+          phone: updateUserDto.phone,
+          hashed_password: hashedPassword,
         },
       });
 
