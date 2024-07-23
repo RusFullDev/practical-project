@@ -5,14 +5,12 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ValidationPipe } from '@nestjs/common';
 import { NestExpressApplication } from '@nestjs/platform-express';
 
-
-
 const start = async () => {
   const PORT = process.env.PORT || 3000;
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
   app.enableCors({
-    methods: ['GET', 'POST', 'PATCH', 'DELETE'],
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
     optionsSuccessStatus: 200,
     origin: '*',
   });
