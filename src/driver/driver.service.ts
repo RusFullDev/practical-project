@@ -448,7 +448,9 @@ export class AuthService {
 
   async findAll() {
     try {
-      return await this.prismaService.driver.findMany({});
+      return await this.prismaService.driver.findMany({
+        include: { driver_car:{include:{car:true, driver:true}}},
+      });
     } catch (error) {
       throw new Error(`Error finding driver: ${error.message}`);
     }

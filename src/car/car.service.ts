@@ -14,14 +14,18 @@ export class CarService {
 
   async create(createCarDto: CreateCarDto) {
     try {
-      const photo = await (await this.fileService.uploadImage(createCarDto.photo[0])).url;
+      const photo = await (
+        await this.fileService.uploadImage(createCarDto.photo[0])
+      ).url;
 
-      const text_passport = await (await this.fileService.uploadImage(createCarDto.text_passport[0])).url;
+      const text_passport = await (
+        await this.fileService.uploadImage(createCarDto.text_passport[0])
+      ).url;
 
       const createdOrderTruck = await this.prismaService.car.create({
         data: {
           model: createCarDto.model,
-          color: createCarDto.capacity,
+          color: createCarDto.color,
           number: createCarDto.number,
           capacity: createCarDto.capacity,
           photo: photo,

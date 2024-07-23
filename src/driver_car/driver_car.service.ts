@@ -13,7 +13,7 @@ export class DriverCarService {
   }
 
   findAll() {
-    return this.prismaService.driver_car.findMany({include:{driver:true,car:true}})
+    return this.prismaService.driver_car.findMany({include:{car:true, driver:true}})
   }
 
   findOne(id: number) {
