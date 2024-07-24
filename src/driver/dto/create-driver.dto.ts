@@ -31,14 +31,14 @@ export class CreateDriverDto {
   @ApiProperty({
     type: "string",
     format: "binary",
-    // required:true
+    required:true
   })
   photo?: any;
 
   @ApiProperty({
     type: "string",
     format: "binary",
-    // required:true
+    required:true
   })
   driver_license?: any;
 }
