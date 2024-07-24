@@ -1,6 +1,6 @@
 // src/auth/dto/create-driver.dto.ts
-import { ApiProperty } from '@nestjs/swagger';
-import { IsString, IsNotEmpty, IsDecimal, IsOptional } from 'class-validator';
+import { ApiProperty } from "@nestjs/swagger";
+import { IsString, IsNotEmpty, IsDecimal, IsOptional } from "class-validator";
 
 export class CreateDriverDto {
   @ApiProperty()
@@ -29,16 +29,16 @@ export class CreateDriverDto {
   address: string;
 
   @ApiProperty({
-    type: 'string',
-    format: 'binary',
-    required:true
+    type: "string",
+    format: "binary",
+    // required:true
   })
-  photo: any;
+  photo?: any;
 
   @ApiProperty({
-    type: 'string',
-    format: 'binary',
-    required:true
+    type: "string",
+    format: "binary",
+    // required:true
   })
-  driver_license: any;
+  driver_license?: any;
 }
