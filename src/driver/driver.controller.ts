@@ -147,4 +147,13 @@ export class DriverController {
   async findAll() {
     return this.authService.findAll();
   }
+
+  @Get(':id')
+  @ApiResponse({
+    status: 200,
+    description: 'Returns one driver',
+  })
+  async findById(@Param('id') id: number) {
+    return this.authService.findById(id);
+  }
 }

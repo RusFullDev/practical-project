@@ -455,6 +455,16 @@ export class AuthService {
       throw new Error(`Error finding driver: ${error.message}`);
     }
   }
+  async findById(id:number) {
+    try {
+      return await this.prismaService.driver.findFirst({
+        where:{id: id},
+        include: { driver_car:{include:{car:true, driver:true}}},
+      });
+    } catch (error) {
+      throw new Error(`Error finding driver: ${error.message}`);
+    }
+  }
   async remove(id: number) {
     const existingBalance = await this.prismaService.driver.findUnique({
       where: { id },
