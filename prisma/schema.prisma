@@ -123,8 +123,8 @@ model Driver {
   last_name       String
   phone           String       @unique
   address         String
-  photo           String
-  driver_license  String
+  photo           String?
+  driver_license  String?
   is_active       Boolean?     @default(false)
   hashed_token    String? // Optional
   hashed_password String? // Optional
