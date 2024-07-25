@@ -474,6 +474,7 @@ export class AuthService {
   async remove(id: number) {
     const existingBalance = await this.prismaService.driver.findUnique({
       where: { id },
+      include: { driver_car: true },
     });
 
     if (!existingBalance) {
@@ -481,6 +482,12 @@ export class AuthService {
     }
 
     try {
+      for (const item of existingBalance.driver_car) {
+        console.log(item);
+        await this.prismaService.car.delete({
+          where: { id: item.carId },
+        });
+      }
       return await this.prismaService.driver.delete({
         where: { id },
       });
