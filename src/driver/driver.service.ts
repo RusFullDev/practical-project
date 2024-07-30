@@ -404,19 +404,16 @@ export class AuthService {
     if (!newUser) {
       throw new BadRequestException('Driver not found');
     }
-    const matchPassword = await bcrypt.compare(
-      updateUserDto.password,
-      newUser.hashed_password,
-    );
-    if (!matchPassword) {
-      throw new BadRequestException('Password not match');
-    }
+
     const hashed_password = await bcrypt.hash(updateUserDto.password, 7);
     const updateUser = await this.prismaService.driver.update({
       where: { id },
       data: {
-        hashed_password,
-        ...updateUserDto,
+        first_name: updateUserDto.first_name,
+        last_name: updateUserDto.last_name,
+        phone: updateUserDto.phone,
+        address: updateUserDto.address,
+        hashed_password
       },
     });
 
