@@ -20,6 +20,7 @@ import { decode, encode } from '../common/helpers/crypto';
 import axios from 'axios';
 import { CloudinaryService } from '../cloudinary/cloudinary.service';
 import { UpdateDriverImage } from './dto/updateImage.dto';
+import { UpdateStatusDto } from './dto/ischeck.dto';
 
 @Injectable()
 export class AuthService {
@@ -446,6 +447,18 @@ export class AuthService {
         where: { id: id },
         data: { photo: photo },
       });
+    }
+  }
+
+  async updateStatus(id: number, payload: UpdateStatusDto){
+    try {
+      await this.prismaService.driver.update({
+        where: { id: id },
+        data: { is_active: payload.status },
+      });
+      return { message: 'Status updated successfully' };
+    } catch (error) {
+      throw new Error(`Error updating status: ${error.message}`);
     }
   }
 

@@ -146,7 +146,7 @@ export class UsersService {
       httpOnly: true,
     });
 
-    return tokens;
+    return { tokens, newUser };
   }
   /***************************************************logout******************************************************* */
 

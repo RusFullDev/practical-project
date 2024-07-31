@@ -34,6 +34,7 @@ import {
   FileInterceptor,
 } from '@nestjs/platform-express';
 import { UpdateDriverImage } from './dto/updateImage.dto';
+import { UpdateStatusDto } from './dto/ischeck.dto';
 
 @ApiTags('Driver')
 @Controller('driver')
@@ -67,6 +68,15 @@ export class DriverController {
   ) {
     const tokens = await this.authService.driverSignIn(loginDriverAuthDto, res);
     return res.json(tokens);
+  }
+
+  @Patch('ischeck/:id')
+  async updateDriver(
+    @Body() updatestatus: UpdateStatusDto,
+    @Param('id') id: string
+  ) {
+    return await this.authService.updateStatus(+id, updatestatus);
+
   }
 
   @Post('signout')
