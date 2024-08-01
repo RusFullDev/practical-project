@@ -123,8 +123,8 @@ model Driver {
   last_name       String
   phone           String       @unique
   address         String
-  photo           String
-  driver_license  String
+  photo           String?
+  driver_license  String?
   is_active       Boolean?     @default(false)
   hashed_token    String? // Optional
   hashed_password String? // Optional
@@ -151,15 +151,15 @@ model Car {
   text_passport String
   capacity      String
 
-  driver_car Driver_car[]
+  driver_car Driver_car[] 
 }
 
 model Driver_car {
   id       Int    @id @default(autoincrement())
   carId    Int    @map("carId")
   driverId Int    @map("driverId")
-  car      Car    @relation(fields: [carId], references: [id])
-  driver   Driver @relation(fields: [driverId], references: [id])
+  car      Car    @relation(fields: [carId], references: [id],onDelete: Cascade,onUpdate: NoAction)
+  driver   Driver @relation(fields: [driverId], references: [id], onDelete: Cascade,onUpdate: NoAction)
 }
 
 model Region {

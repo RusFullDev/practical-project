@@ -35,8 +35,8 @@ export class RegionService {
       include: { district: true },
     });
     const result = [];
-    const districts = [];
     for (const x of data) {
+      const districts = [];
       const name_request = {
         translateId: x.name,
         languageCode: languageCode,

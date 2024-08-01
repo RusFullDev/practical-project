@@ -20,6 +20,7 @@ import { decode, encode } from '../common/helpers/crypto';
 import axios from 'axios';
 import { CloudinaryService } from '../cloudinary/cloudinary.service';
 import { UpdateDriverImage } from './dto/updateImage.dto';
+import { UpdateStatusDto } from './dto/ischeck.dto';
 
 @Injectable()
 export class AuthService {
@@ -144,6 +145,8 @@ export class AuthService {
   }
 
   async driverSignUp(createDriverDto: CreateDriverDto, res: Response) {
+    let photo = '';
+    let driver_license = '';
     const driver = await this.prismaService.driver.findFirst({
       where: {
         phone: createDriverDto.phone,
@@ -155,12 +158,16 @@ export class AuthService {
 
     const hashed_password = await bcrypt.hash(createDriverDto.password, 7);
 
-    const photo = await (
-      await this.fileService.uploadImage(createDriverDto.photo[0])
-    ).url;
-    const driver_license = await (
-      await this.fileService.uploadImage(createDriverDto.driver_license[0])
-    ).url;
+    if (createDriverDto.photo) {
+      photo = await (
+        await this.fileService.uploadImage(createDriverDto.photo[0])
+      ).url;
+    }
+    if (createDriverDto.driver_license) {
+      driver_license = await (
+        await this.fileService.uploadImage(createDriverDto.driver_license[0])
+      ).url;
+    }
 
     const newDriver = await this.prismaService.driver.create({
       data: {
@@ -398,19 +405,16 @@ export class AuthService {
     if (!newUser) {
       throw new BadRequestException('Driver not found');
     }
-    const matchPassword = await bcrypt.compare(
-      updateUserDto.password,
-      newUser.hashed_password,
-    );
-    if (!matchPassword) {
-      throw new BadRequestException('Password not match');
-    }
+
     const hashed_password = await bcrypt.hash(updateUserDto.password, 7);
     const updateUser = await this.prismaService.driver.update({
       where: { id },
       data: {
-        hashed_password,
-        ...updateUserDto,
+        first_name: updateUserDto.first_name,
+        last_name: updateUserDto.last_name,
+        phone: updateUserDto.phone,
+        address: updateUserDto.address,
+        hashed_password
       },
     });
 
@@ -446,20 +450,32 @@ export class AuthService {
     }
   }
 
+  async updateStatus(id: number, payload: UpdateStatusDto){
+    try {
+      await this.prismaService.driver.update({
+        where: { id: id },
+        data: { is_active: payload.status },
+      });
+      return { message: 'Status updated successfully' };
+    } catch (error) {
+      throw new Error(`Error updating status: ${error.message}`);
+    }
+  }
+
   async findAll() {
     try {
       return await this.prismaService.driver.findMany({
-        include: { driver_car:{include:{car:true, driver:true}}},
+        include: { driver_car: { include: { car: true, driver: true } } },
       });
     } catch (error) {
       throw new Error(`Error finding driver: ${error.message}`);
     }
   }
-  async findById(id:number) {
+  async findById(id: number) {
     try {
       return await this.prismaService.driver.findFirst({
-        where:{id: id},
-        include: { driver_car:{include:{car:true, driver:true}}},
+        where: { id: id },
+        include: { driver_car: { include: { car: true, driver: true } } },
       });
     } catch (error) {
       throw new Error(`Error finding driver: ${error.message}`);
@@ -468,6 +484,7 @@ export class AuthService {
   async remove(id: number) {
     const existingBalance = await this.prismaService.driver.findUnique({
       where: { id },
+      include: { driver_car: true },
     });
 
     if (!existingBalance) {
@@ -475,6 +492,12 @@ export class AuthService {
     }
 
     try {
+      for (const item of existingBalance.driver_car) {
+        console.log(item);
+        await this.prismaService.car.delete({
+          where: { id: item.carId },
+        });
+      }
       return await this.prismaService.driver.delete({
         where: { id },
       });

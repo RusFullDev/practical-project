@@ -29,17 +29,17 @@ export class CreateDriverDto {
   address: string;
 
   @ApiProperty({
-    type: "string",
-    format: "binary",
-    required: true,
+    type: 'string',
+    format: 'binary',
+    required: false,
   })
   @IsOptional()
   photo?: any;
 
   @ApiProperty({
-    type: "string",
-    format: "binary",
-    required: true,
+    type: 'string',
+    format: 'binary',
+    required: false,
   })
   @IsOptional()
   driver_license?: any;
