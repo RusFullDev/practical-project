@@ -11,6 +11,7 @@ import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { OrderTaxiService } from './order_taxi.service';
 import { CreateOrderTaxiDto } from './dto/create-order_taxi.dto';
 import { UpdateOrderTaxiDto } from './dto/update-order_taxi.dto';
+import { UpdateOrderStatusDto } from './dto/update-order-status';
 
 @ApiTags('order-taxi')
 @Controller('order-taxi')
@@ -72,5 +73,13 @@ export class OrderTaxiController {
   @ApiResponse({ status: 404, description: 'Order taxi not found.' })
   remove(@Param('id') id: string) {
     return this.orderTaxiService.remove(+id);
+  }
+
+  @Patch('update-status/:id')
+  async updateDriver(
+    @Body() updatestatus: UpdateOrderStatusDto,
+    @Param('id') id: string,
+  ) {
+    return await this.orderTaxiService.updateStatus(+id, updatestatus);
   }
 }

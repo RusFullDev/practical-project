@@ -2,31 +2,32 @@ import {
   Injectable,
   InternalServerErrorException,
   NotFoundException,
-} from "@nestjs/common";
-import { CreateOrderTaxiDto } from "./dto/create-order_taxi.dto";
-import { UpdateOrderTaxiDto } from "./dto/update-order_taxi.dto";
-import { PrismaService } from "../prisma/prisma.service";
-import axios from "axios";
+} from '@nestjs/common';
+import { CreateOrderTaxiDto } from './dto/create-order_taxi.dto';
+import { UpdateOrderTaxiDto } from './dto/update-order_taxi.dto';
+import { PrismaService } from '../prisma/prisma.service';
+import axios from 'axios';
+import { UpdateOrderStatusDto } from './dto/update-order-status';
 
 @Injectable()
 export class OrderTaxiService {
   constructor(private readonly prismaService: PrismaService) {}
 
   async getCoordinates(
-    name: string
+    name: string,
   ): Promise<{ latitude: number; longitude: number }> {
     try {
       const response = await fetch(
-        `https://api.geoapify.com/v1/geocode/search?text=${name}&format=json&apiKey=0e7cd19cff5e4d6d9163ec21225512f3`
+        `https://api.geoapify.com/v1/geocode/search?text=${name}&format=json&apiKey=0e7cd19cff5e4d6d9163ec21225512f3`,
       );
 
       if (!response.ok) {
-        throw new Error("Failed to fetch coordinates");
+        throw new Error('Failed to fetch coordinates');
       }
 
       const data = await response.json();
       if (!data.results || data.results.length === 0) {
-        throw new Error("No coordinates found for the given name");
+        throw new Error('No coordinates found for the given name');
       }
 
       const { lat: latitude, lon: longitude } = data.results[0];
@@ -42,11 +43,11 @@ export class OrderTaxiService {
       const { from_district, to_district } = createOrderTaxiDto;
       const fromCoordinat = await this.getCoordinates(from_district);
       if (!fromCoordinat) {
-        throw new NotFoundException("From region not found");
+        throw new NotFoundException('From region not found');
       }
       const toCoordinat = await this.getCoordinates(to_district);
       if (!toCoordinat) {
-        throw new NotFoundException("To region not found");
+        throw new NotFoundException('To region not found');
       }
 
       const response = await axios.get(
@@ -57,10 +58,10 @@ export class OrderTaxiService {
             destinations: `${toCoordinat.latitude},${toCoordinat.longitude}`,
             key: process.env.GOOGLE_API_KEY,
           },
-        }
+        },
       );
-      if (response.data.status !== "OK") {
-        throw new Error("Error fetching distance data from Google Maps API");
+      if (response.data.status !== 'OK') {
+        throw new Error('Error fetching distance data from Google Maps API');
       }
       const distance = response.data.rows[0].elements[0].distance.text;
       const duration = response.data.rows[0].elements[0].duration.text;
@@ -75,12 +76,12 @@ export class OrderTaxiService {
       return createOrder;
     } catch (error) {
       console.log(error);
-      throw new InternalServerErrorException("Failed to create delivery order");
+      throw new InternalServerErrorException('Failed to create delivery order');
     }
   }
 
   findAll() {
-    return this.prismaService.orderTaxi.findMany({include:{User:true}});
+    return this.prismaService.orderTaxi.findMany({ include: { User: true } });
   }
 
   findOne(id: number) {
@@ -103,5 +104,25 @@ export class OrderTaxiService {
     return this.prismaService.orderTaxi.delete({
       where: { id },
     });
+  }
+
+  async updateStatus(id: number, payload: UpdateOrderStatusDto) {
+    try {
+      const order = await this.prismaService.orderTaxi.findUnique({
+        where: { id },
+      });
+
+      if (!order) {
+        throw new Error(`Order with ID ${id} not found`);
+      }
+
+      await this.prismaService.orderTaxi.update({
+        where: { id: id },
+        data: { status: payload.status },
+      });
+      return { message: 'Status updated successfully',status:payload.status };
+    } catch (error) {
+      throw new Error(`Error updating status: ${error.message}`);
+    }
   }
 }

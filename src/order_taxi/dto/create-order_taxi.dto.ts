@@ -11,14 +11,14 @@ export class CreateOrderTaxiDto {
   userId: number;
 
   @ApiProperty({
-    example: "Central District",
+    example: "tashkent",
     description: "The district where the journey starts",
   })
   @IsString()
   from_district: string;
 
   @ApiProperty({
-    example: "North District",
+    example: "jizzax",
     description: "The district where the journey ends",
   })
   @IsString()

@@ -3,31 +3,32 @@ import {
   Injectable,
   InternalServerErrorException,
   NotFoundException,
-} from "@nestjs/common";
-import { CreateOrderTruckDto } from "./dto/create-order_truck.dto";
-import { UpdateOrderTruckDto } from "./dto/update-order_truck.dto";
-import { PrismaService } from "../prisma/prisma.service";
-import axios from "axios";
+} from '@nestjs/common';
+import { CreateOrderTruckDto } from './dto/create-order_truck.dto';
+import { UpdateOrderTruckDto } from './dto/update-order_truck.dto';
+import { PrismaService } from '../prisma/prisma.service';
+import axios from 'axios';
+import { UpdateOrderTruckStatusDto } from './dto/update-ordertruck-status';
 
 @Injectable()
 export class OrderTruckService {
   constructor(private readonly prismaService: PrismaService) {}
 
   async getCoordinates(
-    name: string
+    name: string,
   ): Promise<{ latitude: number; longitude: number }> {
     try {
       const response = await fetch(
-        `https://api.geoapify.com/v1/geocode/search?text=${name}&format=json&apiKey=0e7cd19cff5e4d6d9163ec21225512f3`
+        `https://api.geoapify.com/v1/geocode/search?text=${name}&format=json&apiKey=0e7cd19cff5e4d6d9163ec21225512f3`,
       );
 
       if (!response.ok) {
-        throw new Error("Failed to fetch coordinates");
+        throw new Error('Failed to fetch coordinates');
       }
 
       const data = await response.json();
       if (!data.results || data.results.length === 0) {
-        throw new Error("No coordinates found for the given name");
+        throw new Error('No coordinates found for the given name');
       }
 
       const { lat: latitude, lon: longitude } = data.results[0];
@@ -43,11 +44,11 @@ export class OrderTruckService {
       const { from_district, to_district } = createOrderTruckDto;
       const fromCoordinat = await this.getCoordinates(from_district);
       if (!fromCoordinat) {
-        throw new NotFoundException("From region not found");
+        throw new NotFoundException('From region not found');
       }
       const toCoordinat = await this.getCoordinates(to_district);
       if (!toCoordinat) {
-        throw new NotFoundException("To region not found");
+        throw new NotFoundException('To region not found');
       }
 
       const response = await axios.get(
@@ -58,10 +59,10 @@ export class OrderTruckService {
             destinations: `${toCoordinat.latitude},${toCoordinat.longitude}`,
             key: process.env.GOOGLE_API_KEY,
           },
-        }
+        },
       );
-      if (response.data.status !== "OK") {
-        throw new Error("Error fetching distance data from Google Maps API");
+      if (response.data.status !== 'OK') {
+        throw new Error('Error fetching distance data from Google Maps API');
       }
       const distance = response.data.rows[0].elements[0].distance.text;
       const duration = response.data.rows[0].elements[0].duration.text;
@@ -76,18 +77,18 @@ export class OrderTruckService {
       return createOrder;
     } catch (error) {
       console.log(error);
-      throw new InternalServerErrorException("Failed to create delivery order");
+      throw new InternalServerErrorException('Failed to create delivery order');
     }
   }
 
   findAll() {
-    return this.prismaService.orderTruck.findMany({include:{User:true}});
+    return this.prismaService.orderTruck.findMany({ include: { User: true } });
   }
 
   findOne(id: number) {
     return this.prismaService.orderTruck.findUnique({
       where: { id },
-      include:{User:true},
+      include: { User: true },
     });
   }
 
@@ -98,7 +99,7 @@ export class OrderTruckService {
       });
 
       if (!userExists) {
-        throw new BadRequestException("User does not exist");
+        throw new BadRequestException('User does not exist');
       }
     }
 
@@ -115,5 +116,25 @@ export class OrderTruckService {
     return this.prismaService.orderTruck.delete({
       where: { id },
     });
+  }
+
+  async updateStatus(id: number, payload: UpdateOrderTruckStatusDto) {
+    try {
+      const order = await this.prismaService.orderTruck.findUnique({
+        where: { id },
+      });
+
+      if (!order) {
+        throw new Error(`Ordertruck with ID ${id} not found`);
+      }
+
+      await this.prismaService.orderTruck.update({
+        where: { id: id },
+        data: { status: payload.status },
+      });
+      return { message: 'Status updated successfully', status: payload.status };
+    } catch (error) {
+      throw new Error(`Error updating status: ${error.message}`);
+    }
   }
 }
