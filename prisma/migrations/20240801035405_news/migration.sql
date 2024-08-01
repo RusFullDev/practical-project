@@ -96,8 +96,8 @@ CREATE TABLE "Driver" (
     "last_name" TEXT NOT NULL,
     "phone" TEXT NOT NULL,
     "address" TEXT NOT NULL,
-    "photo" TEXT NOT NULL,
-    "driver_license" TEXT NOT NULL,
+    "photo" TEXT,
+    "driver_license" TEXT,
     "is_active" BOOLEAN DEFAULT false,
     "hashed_token" TEXT,
     "hashed_password" TEXT,
@@ -210,10 +210,10 @@ ALTER TABLE "OrderTruck" ADD CONSTRAINT "OrderTruck_userId_fkey" FOREIGN KEY ("u
 ALTER TABLE "Balance" ADD CONSTRAINT "Balance_driverId_fkey" FOREIGN KEY ("driverId") REFERENCES "Driver"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Driver_car" ADD CONSTRAINT "Driver_car_carId_fkey" FOREIGN KEY ("carId") REFERENCES "Car"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Driver_car" ADD CONSTRAINT "Driver_car_carId_fkey" FOREIGN KEY ("carId") REFERENCES "Car"("id") ON DELETE CASCADE ON UPDATE NO ACTION;
 
 -- AddForeignKey
-ALTER TABLE "Driver_car" ADD CONSTRAINT "Driver_car_driverId_fkey" FOREIGN KEY ("driverId") REFERENCES "Driver"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Driver_car" ADD CONSTRAINT "Driver_car_driverId_fkey" FOREIGN KEY ("driverId") REFERENCES "Driver"("id") ON DELETE CASCADE ON UPDATE NO ACTION;
 
 -- AddForeignKey
 ALTER TABLE "District" ADD CONSTRAINT "District_region_id_fkey" FOREIGN KEY ("region_id") REFERENCES "Region"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
