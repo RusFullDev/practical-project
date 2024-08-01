@@ -406,15 +406,12 @@ export class AuthService {
       throw new BadRequestException('Driver not found');
     }
 
-    const hashed_password = await bcrypt.hash(updateUserDto.password, 7);
     const updateUser = await this.prismaService.driver.update({
       where: { id },
       data: {
         first_name: updateUserDto.first_name,
         last_name: updateUserDto.last_name,
-        phone: updateUserDto.phone,
         address: updateUserDto.address,
-        hashed_password
       },
     });
 
@@ -433,10 +430,12 @@ export class AuthService {
       const driver_license = await (
         await this.fileService.uploadImage(updateDriverImage.driver_license)
       ).url;
-      await this.prismaService.driver.update({
-        where: { id: id },
-        data: { driver_license: driver_license },
-      });
+      if (driver_license) {
+        await this.prismaService.driver.update({
+          where: { id: id },
+          data: { driver_license: driver_license },
+        });
+      }
     }
 
     if (updateDriverImage.photo) {

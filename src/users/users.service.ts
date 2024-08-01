@@ -104,12 +104,12 @@ export class UsersService {
       maxAge: Number(process.env.COOKIE_TIME),
       httpOnly: true,
     });
-    return tokens;
+    return {
+      newUser,
+      tokens
+    };
 
-    try {
-    } catch (error) {
-      console.log(error);
-    }
+
   }
 
   /************************************************signIn********************************************************* */
