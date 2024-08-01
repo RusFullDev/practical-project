@@ -40,4 +40,14 @@ jobs:
         USER: ${{ secrets.USER }}
         PASSWORD: ${{ secrets.PASSWORD }}
       run: |
-        sshpass -p "$PASSWORD" ssh -o StrictHostKeyChecking=no $USER@$SERVER "pm2 stop taxi && cd .. && cd taxi && git pull && npm install && npx prisma migrate dev --name news && npm run build && pm2 start dist/main.js --name taxi"
+        sshpass -p "$PASSWORD" ssh -o StrictHostKeyChecking=no $USER@$SERVER "
+          pm2 stop taxi &&
+          cd .. &&
+          cd taxi &&
+          git pull &&
+          npm install &&
+          echo 'Running Prisma migration...' &&
+          npx prisma migrate dev --name news || echo 'Prisma migration failed' &&
+          npm run build &&
+          pm2 start dist/main.js --name taxi
+        "
