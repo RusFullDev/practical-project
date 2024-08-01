@@ -428,7 +428,7 @@ export class AuthService {
 
     if (updateDriverImage.driver_license) {
       const driver_license = await (
-        await this.fileService.uploadImage(updateDriverImage.driver_license)
+        await this.fileService.uploadImage(updateDriverImage.driver_license[0])
       ).url;
       if (driver_license) {
         await this.prismaService.driver.update({
@@ -440,16 +440,17 @@ export class AuthService {
 
     if (updateDriverImage.photo) {
       const photo = await (
-        await this.fileService.uploadImage(updateDriverImage.photo)
+        await this.fileService.uploadImage(updateDriverImage.photo[0])
       ).url;
       await this.prismaService.driver.update({
         where: { id: id },
         data: { photo: photo },
       });
     }
+    return { message: 'Photo updated successfully' };
   }
 
-  async updateStatus(id: number, payload: UpdateStatusDto){
+  async updateStatus(id: number, payload: UpdateStatusDto) {
     try {
       await this.prismaService.driver.update({
         where: { id: id },
