@@ -106,10 +106,8 @@ export class UsersService {
     });
     return {
       newUser,
-      tokens
+      tokens,
     };
-
-
   }
 
   /************************************************signIn********************************************************* */
@@ -423,4 +421,7 @@ export class UsersService {
       throw new Error(`Error deleting user with ID ${id}: ${error.message}`);
     }
   }
+
+  // ---------------------------------------------
+
 }

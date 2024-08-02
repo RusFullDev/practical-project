@@ -16,6 +16,7 @@ import { join } from 'path';
 import { CloudinaryModule } from './cloudinary/cloudinary.module';
 import { AdminModule } from './admin/admin.module';
 import { DriverCarModule } from './driver_car/driver_car.module';
+import { StatisticsModule } from './statistics/statistics.module';
 @Module({
   imports: [ 
     ServeStaticModule.forRoot({
@@ -35,7 +36,8 @@ import { DriverCarModule } from './driver_car/driver_car.module';
     LanguageModule,
     CloudinaryModule,
     DriverCarModule,
-    AdminModule
+    AdminModule,
+    StatisticsModule
   ],
   controllers: [],
   providers:[],

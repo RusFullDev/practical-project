@@ -19,9 +19,9 @@ enum Status {
 }
 
 enum OrderStatus {
-  new   @map("new")
-  waiting @map("waiting")
-  onroad @map("onroad")
+  new      @map("new")
+  waiting  @map("waiting")
+  onroad   @map("onroad")
   finished @map("finished")
 }
 
@@ -78,40 +78,39 @@ model Definition {
 }
 
 model User {
-  id              Int    @id @default(autoincrement())
-  phone           String @unique
+  id              Int          @id @default(autoincrement())
+  phone           String       @unique
   name            String
   hashed_password String
-  hashed_token String
-  is_active    Boolean      @default(false)
-  createAt     DateTime     @default(now())
-  updateAt     DateTime     @updatedAt
-  OrderTaxi    OrderTaxi[]
-  OredrTruck   OrderTruck[]
+  hashed_token    String
+  is_active       Boolean      @default(false)
+  createAt        DateTime     @default(now())
+  updateAt        DateTime     @updatedAt
+  OrderTaxi       OrderTaxi[]
+  OredrTruck      OrderTruck[]
 
   @@map("user")
 }
 
 model OrderTaxi {
-  id            Int      @id @default(autoincrement())
+  id            Int         @id @default(autoincrement())
   to_district   String
   from_district String
   date          DateTime
   location      String?
   description   String
-  User          User?    @relation(fields: [userId], references: [id])
+  User          User?       @relation(fields: [userId], references: [id])
   userId        Int?
   distance      String
   duration      String
   status        OrderStatus @default(new)
-
 }
 
 model OrderTruck {
-  id              Int        @id @default(autoincrement())
-  User            User?      @relation(fields: [userId], references: [id])
+  id              Int         @id @default(autoincrement())
+  User            User?       @relation(fields: [userId], references: [id])
   userId          Int?
-  cargo_type      Cargo_type @default(load)
+  cargo_type      Cargo_type  @default(load)
   date            DateTime
   capacity        Int
   recipient_name  String
@@ -122,8 +121,7 @@ model OrderTruck {
   description     String
   distance        String
   duration        String
-  status        OrderStatus @default(new)
-
+  status          OrderStatus @default(new)
 }
 
 model Driver {
@@ -135,6 +133,8 @@ model Driver {
   photo           String?
   driver_license  String?
   is_active       Boolean?     @default(false)
+  createAt        DateTime     @default(now())
+  updateAt        DateTime     @updatedAt
   hashed_token    String? // Optional
   hashed_password String? // Optional
   total_balance   Decimal      @default(0)
@@ -160,15 +160,15 @@ model Car {
   text_passport String
   capacity      String
 
-  driver_car Driver_car[] 
+  driver_car Driver_car[]
 }
 
 model Driver_car {
   id       Int    @id @default(autoincrement())
   carId    Int    @map("carId")
   driverId Int    @map("driverId")
-  car      Car    @relation(fields: [carId], references: [id],onDelete: Cascade,onUpdate: NoAction)
-  driver   Driver @relation(fields: [driverId], references: [id], onDelete: Cascade,onUpdate: NoAction)
+  car      Car    @relation(fields: [carId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  driver   Driver @relation(fields: [driverId], references: [id], onDelete: Cascade, onUpdate: NoAction)
 }
 
 model Region {
