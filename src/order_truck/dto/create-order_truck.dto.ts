@@ -22,7 +22,7 @@ export class CreateOrderTruckDto {
   @ApiProperty({ example: 10 })
   @IsNumber()
   capacity: number;
-
+  
   @ApiProperty({ example: 'Gofur' })
   @IsString()
   recipient_name: string;

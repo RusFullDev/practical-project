@@ -9,6 +9,7 @@ import { UpdateOrderTruckDto } from './dto/update-order_truck.dto';
 import { PrismaService } from '../prisma/prisma.service';
 import axios from 'axios';
 import { UpdateOrderTruckStatusDto } from './dto/update-ordertruck-status';
+import { error, log } from 'console';
 
 @Injectable()
 export class OrderTruckService {
@@ -82,7 +83,9 @@ export class OrderTruckService {
   }
 
   findAll() {
-    return this.prismaService.orderTruck.findMany({ include: { User: true } });
+    return this.prismaService.orderTruck.findMany({
+      include: { User: true, Driver: true },
+    });
   }
 
   findOne(id: number) {
@@ -125,13 +128,33 @@ export class OrderTruckService {
       });
 
       if (!order) {
-        throw new Error(`Ordertruck with ID ${id} not found`);
+        throw new Error(`OrderTruck with ID ${id} not found`);
       }
 
-      await this.prismaService.orderTruck.update({
+      const updatedOrder = await this.prismaService.orderTruck.update({
         where: { id: id },
         data: { status: payload.status },
       });
+
+      if (payload.status === 'finished' && order.userId) {
+        console.log('order truck finished');
+        const user = await this.prismaService.user.findUnique({
+          where: { id: order.userId },
+        });
+
+        if (user && order.status !== 'finished') {
+          await this.prismaService.user.update({
+            where: { id: order.userId },
+            data: {
+              history: user.history
+                ? ``
+                : `order_truck_id:${order.id}, date:${new Date().toISOString()}`,
+            },
+          });
+        }else{console.log('status already finished');
+        }
+      }
+
       return { message: 'Status updated successfully', status: payload.status };
     } catch (error) {
       throw new Error(`Error updating status: ${error.message}`);

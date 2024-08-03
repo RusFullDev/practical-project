@@ -86,6 +86,7 @@ model User {
   is_active       Boolean      @default(false)
   createAt        DateTime     @default(now())
   updateAt        DateTime     @updatedAt
+  history         String?
   OrderTaxi       OrderTaxi[]
   OredrTruck      OrderTruck[]
 
@@ -104,6 +105,8 @@ model OrderTaxi {
   distance      String
   duration      String
   status        OrderStatus @default(new)
+  driverId      Int?
+  Driver        Driver?     @relation(fields: [driverId], references: [id])
 }
 
 model OrderTruck {
@@ -122,6 +125,8 @@ model OrderTruck {
   distance        String
   duration        String
   status          OrderStatus @default(new)
+  driverId        Int?
+  Driver          Driver?     @relation(fields: [driverId], references: [id])
 }
 
 model Driver {
@@ -138,8 +143,11 @@ model Driver {
   hashed_token    String? // Optional
   hashed_password String? // Optional
   total_balance   Decimal      @default(0)
+  history         String?
   balance         Balance[]
   driver_car      Driver_car[]
+  OrderTaxi       OrderTaxi[]
+  OrderTruck      OrderTruck[]
 }
 
 model Balance {

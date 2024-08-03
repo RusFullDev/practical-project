@@ -1,0 +1,7 @@
+-- AlterTable
+ALTER TABLE "Driver" ALTER COLUMN "history" DROP NOT NULL,
+ALTER COLUMN "history" DROP DEFAULT;
+
+-- AlterTable
+ALTER TABLE "user" ALTER COLUMN "history" DROP NOT NULL,
+ALTER COLUMN "history" DROP DEFAULT;

@@ -8,6 +8,7 @@ import { UpdateOrderTaxiDto } from './dto/update-order_taxi.dto';
 import { PrismaService } from '../prisma/prisma.service';
 import axios from 'axios';
 import { UpdateOrderStatusDto } from './dto/update-order-status';
+import { log } from 'console';
 
 @Injectable()
 export class OrderTaxiService {
@@ -81,7 +82,7 @@ export class OrderTaxiService {
   }
 
   findAll() {
-    return this.prismaService.orderTaxi.findMany({ include: { User: true } });
+    return this.prismaService.orderTaxi.findMany({ include: { User: true,Driver:true } });
   }
 
   findOne(id: number) {
@@ -107,22 +108,50 @@ export class OrderTaxiService {
   }
 
   async updateStatus(id: number, payload: UpdateOrderStatusDto) {
-    try {
-      const order = await this.prismaService.orderTaxi.findUnique({
-        where: { id },
-      });
+     try {
+       const order = await this.prismaService.orderTaxi.findUnique({
+         where: { id },
+       });
 
-      if (!order) {
-        throw new Error(`Order with ID ${id} not found`);
-      }
+       
 
-      await this.prismaService.orderTaxi.update({
-        where: { id: id },
-        data: { status: payload.status },
-      });
-      return { message: 'Status updated successfully',status:payload.status };
-    } catch (error) {
-      throw new Error(`Error updating status: ${error.message}`);
-    }
+       if (!order) {
+         throw new Error(`OrderTaxi with ID ${id} not found`);
+       }
+
+       const updatedOrder = await this.prismaService.orderTaxi.update({
+         where: { id: id },
+         data: { status: payload.status },
+       });
+       
+
+       if (payload.status === 'finished' && order.userId) {
+         console.log('order taxi finished');
+         const user = await this.prismaService.user.findUnique({
+           where: { id: order.userId },
+         });
+         
+
+         if (user && order.status !== 'finished') {
+           await this.prismaService.user.update({
+             where: { id: order.userId },
+             data: {
+               history: user.history
+                 ? ``
+                 : `order_truck_id:${order.id}, date:${new Date().toISOString()}`,
+             },
+           });
+         } else {
+           console.log('status already finished');
+         }
+       }
+
+       return {
+         message: 'Status updated successfully',
+         status: payload.status,
+       };
+     } catch (error) {
+       throw new Error(`Error updating status: ${error.message}`);
+     }
   }
 }

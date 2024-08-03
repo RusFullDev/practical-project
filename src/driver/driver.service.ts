@@ -505,4 +505,5 @@ export class AuthService {
       throw new Error(`Error deleting driver with ID ${id}: ${error.message}`);
     }
   }
+  
 }
