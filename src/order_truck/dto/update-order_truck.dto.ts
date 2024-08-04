@@ -6,46 +6,45 @@ export class UpdateOrderTruckDto {
   @ApiProperty({ required: false })
   @IsOptional()
   @IsNumber()
-  userId: number;
-  
+  userId?: number;
+
   @ApiProperty({ required: false })
   @IsOptional()
   @IsNumber()
-  driverId: number;
+  driverId?: number;
 
   @ApiProperty({ example: '2001-01-01' })
   @IsDateString()
   @IsOptional()
-  @Type(() => Date)
-  date: Date;
+  date?: Date;
 
   @ApiProperty({ example: 10 })
   @IsNumber()
   @IsOptional()
-  capacity: number;
+  capacity?: number;
 
   @ApiProperty({ example: 'Gofur' })
   @IsString()
   @IsOptional()
-  recipient_name: string;
+  recipient_name?: string;
 
   @ApiProperty({ example: '934554676' })
   @IsString()
   @IsOptional()
-  recipient_phone: string;
+  recipient_phone?: string;
 
   @ApiProperty({ example: 'djizzakh' })
   @IsString()
   @IsOptional()
-  to_district: string;
+  to_district?: string;
 
   @ApiProperty({ example: 'tashkent' })
   @IsString()
   @IsOptional()
-  from_district: string;
+  from_district?: string;
 
   @ApiProperty({ example: 'komentaria' })
   @IsString()
   @IsOptional()
-  description: string;
+  description?: string;
 }
